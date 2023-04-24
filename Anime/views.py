@@ -47,6 +47,18 @@ def sign_up(request):
     return render(request, 'anime_search.html', {'form': form})
 
 def login(request):
-    form = log_inForm()
+    if request.method == 'POST':
+        form = log_inForm(request.POST)
+        if form.is_valid():
+            username = form.cleaned_data['name']
+            return redirect('/homepage/{}/'.format(username))
+    else:
+        form = log_inForm()    
+    # Render the search template with the search form
     return render(request, 'anime_search.html', {'form': form})
+
+def homepage(request, username):
+    return render(request, 'first.html')
+
+
     

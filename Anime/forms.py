@@ -12,3 +12,4 @@ class Sign_upForm(forms.Form):
     
 class log_inForm(forms.Form):
     name = forms.CharField()
+    
