@@ -2,6 +2,7 @@ from django.shortcuts import redirect,render
 from django.http import HttpResponse
 from django.db import connection
 from .forms import *
+from datetime import date
 
 # Create your views here.
 def home(request):
@@ -25,5 +26,27 @@ def search_anime(request):
         form = SearchForm()
         
     # Render the search template with the search form
+    return render(request, 'anime_search.html', {'form': form})
+
+def sign_up(request):
+    if request.method == 'POST':
+        form = Sign_upForm(request.POST)
+        if form.is_valid():
+            I1 = form.cleaned_data['name']
+            I2 = form.cleaned_data['gender']
+            I3 = form.cleaned_data['birthdate']
+            I4 = form.cleaned_data['location']
+            I5 = date.today()
+            with connection.cursor() as cursor:
+                cursor.execute("Insert Into Users(name, gender, birthdate, location, joindate, inbox) values(%s, %s, %s, %s, %s, '{}')", [I1, I2, I3, I4, I5])
+            # Render the results template with the list of anime
+            return redirect('/login/')
+    else:
+        form = Sign_upForm()    
+    # Render the search template with the search form
+    return render(request, 'anime_search.html', {'form': form})
+
+def login(request):
+    form = log_inForm()
     return render(request, 'anime_search.html', {'form': form})
     
