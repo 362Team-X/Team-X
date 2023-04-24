@@ -14,11 +14,52 @@ def search_anime(request):
         if form.is_valid():
             # Get the Japanese title from the form
             anime_title = form.cleaned_data['anime_title']
-            source = form.cleaned_data['source']
+            # source = form.cleaned_data['source']
             
             # Query the database for anime with the given Japanese title
             with connection.cursor() as cursor:
-                cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source = %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title),source])
+                cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), 'Original'])
+                anime_list = cursor.fetchall()
+            # Render the results template with the list of anime
+            return render(request, 'anime_results.html', {'anime_list': anime_list})
+    else:
+        form = SearchForm()
+        
+    # Render the search template with the search form
+    return render(request, 'anime_search.html', {'form': form})
+
+
+def search_manga(request):
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            # Get the Japanese title from the form
+            anime_title = form.cleaned_data['anime_title']
+            # source = form.cleaned_data['source']
+            
+            # Query the database for anime with the given Japanese title
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), 'Novel'])
+                anime_list = cursor.fetchall()
+            # Render the results template with the list of anime
+            return render(request, 'anime_results.html', {'anime_list': anime_list})
+    else:
+        form = SearchForm()
+        
+    # Render the search template with the search form
+    return render(request, 'anime_search.html', {'form': form})
+
+def search_novel(request):
+    if request.method == 'POST':
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            # Get the Japanese title from the form
+            anime_title = form.cleaned_data['anime_title']
+            # source = form.cleaned_data['source']
+            
+            # Query the database for anime with the given Japanese title
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source ILIKE %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), 'Original'])
                 anime_list = cursor.fetchall()
             # Render the results template with the list of anime
             return render(request, 'anime_results.html', {'anime_list': anime_list})
@@ -38,7 +79,8 @@ def sign_up(request):
             I4 = form.cleaned_data['location']
             I5 = date.today()
             with connection.cursor() as cursor:
-                cursor.execute("Insert Into Users(name, gender, birthdate, location, joindate, inbox) values(%s, %s, %s, %s, %s, '{}')", [I1, I2, I3, I4, I5])
+                cursor.execute("Insert Into Users(name, gender, birthdate, location, joindate, inbox) values(%s, %s, %s, %s, %s, '{}');", [I1, I2, I3, I4, I5])
+                cursor.execute("INSERT INTO Stats(name,num_completed,episodes_watched,num_watching,num_planning) values(%s,0,0,0,0);",[I1])
             # Render the results template with the list of anime
             return redirect('/login/')
     else:
@@ -57,8 +99,27 @@ def login(request):
     # Render the search template with the search form
     return render(request, 'anime_search.html', {'form': form})
 
+
 def homepage(request, username):
-    return render(request, 'first.html')
+    return render(request,'homepage.html', {'username' :username})
+
+def profile(request,username):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM Stats WHERE name = %s;", [username])
+        stats = cursor.fetchall()
+    return render(request,'myprofile.html',{'stats':stats})
+
+def friends(request,username):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT name1 FROM friends WHERE name2 = %s UNION SELECT name2 FROM friends WHERE name1 = %s;", [username, username])
+        stats = cursor.fetchall()
+    return render(request,'friends.html',{'stats':stats})
+
+def mylist(request,username):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM Stats WHERE name = %s;", [username])
+        friends = cursor.fetchall()
+    return render(request,'myprofile.html',{'stats':friends})
 
 
     
