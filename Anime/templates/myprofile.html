@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Stats</title>
+  </head>
+  <body>
+    <h1>Anime Search Results</h1>
+    {% if stats %}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Completed</th>
+            <th>Episodes Watched</th>
+            <th>Watching</th>
+            <th>Planing</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for anime in stats %}
+            <tr>
+              <td>{{ anime.0}}</td>
+              <td>{{ anime.1}}</td>
+              <td>{{ anime.2}}</td>
+              <td>{{ anime.3}}</td>
+              <td>{{ anime.4}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No results found.</p>
+    {% endif %}
+  </body>
+</html>

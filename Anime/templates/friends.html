@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Anime Search Results</title>
+  </head>
+  <body>
+    <h1>Anime Search Results</h1>
+    {% if friends %}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for anime in friends %}
+            <tr>
+              <td>{{ anime.0}}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No results found.</p>
+    {% endif %}
+  </body>
+</html>

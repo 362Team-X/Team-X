@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>MyAnimeSite</title>
+</head>
+<body>
+	<div>
+		<h1>Welcome to MyAnimeSite</h1>
+		<p>Choose from the following options:</p>
+		<a href="{% url 'searchanime' %}"><button>Anime</button></a>
+		<a href="{% url 'searchmanga' %}"><button>Manga</button></a>
+        <a href="{% url 'searchnovel' %}"><button>Novels</button></a>
+        <a href="{% url 'myprofile' username %}"><button>Profile</button></a>
+        <a href="{% url 'friends' username %}"><button>Profile</button></a>
+        <a href="{% url 'mylist' username %}"><button>Profile</button></a>
+        
+	</div>
+</body>
+</html>
