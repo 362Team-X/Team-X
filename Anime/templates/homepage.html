@@ -15,5 +15,11 @@
         <a href="{% url 'mylist' username %}"><button>mylist</button></a>
         
 	</div>
+	<form action = "" method = "post">
+		{% csrf_token %}
+		{{form}}
+		<input type = "submit" value = Submit>
+	  </form>
+	  
 </body>
 </html>
