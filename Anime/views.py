@@ -103,7 +103,27 @@ def login(request):
 
 
 def homepage(request, username):
-    return render(request,'homepage.html', {'username' :username})
+    if request.method == 'POST':
+        form = user_searchForm(request.POST)
+        if form.is_valid():
+            # Get the Japanese title from the form
+            user_name = form.cleaned_data['name']
+            # Query the database for anime with the given Japanese title
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT name FROM users WHERE name = %s;", [user_name])
+                user = cursor.fetchall()
+            # Render the results template with the list of anime
+                return redirect('/userpage/{}/{}/'.format(username, user[0][0]))
+    else:
+        form = user_searchForm()
+    return render(request,'homepage.html', {'username' :username,'form' : form})
+
+
+def userpage(request, username, username2):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM Stats WHERE name = %s;", [username2])
+        stats = cursor.fetchall()
+    return render(request,'userprofile.html',{'stats':stats, 'username' : username})
 
 def profile(request,username):
     with connection.cursor() as cursor:
@@ -118,13 +138,41 @@ def friends(request,username):
     return render(request,'friends.html',{'friends':friends})
 
 def mylist(request,username):
+    flag = False
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM Stats WHERE name = %s;", [username])
         friends = cursor.fetchall()
-    return render(request,'myprofile.html',{'stats':friends})
+    return render(request,'mylist.html', {'username' :username, 'flag' :flag})
 
+def mylist_s(request, username):
+    query = request.GET.get('status', '')
+    flag = True
+    with connection.cursor() as cursor:
+        if(query == '1'):
+            cursor.execute("WITH temp AS (SELECT animeid,score FROM completed WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,temp.score FROM anime, temp WHERE animeid=ID;", [username])
+        elif(query == '2'):
+            cursor.execute("WITH temp AS (SELECT animeid FROM planning WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime, temp WHERE animeid=ID;", [username])
+        elif(query == '4'):
+            cursor.execute("WITH temp AS (SELECT animeid FROM watching WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime, temp WHERE animeid=ID;", [username])
+        elif(query == '3'):
+            cursor.execute("WITH temp AS (SELECT animeid FROM Favourites WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime, temp WHERE animeid=ID;", [username])
+        else:
+            flag = False
+        anime_list = cursor.fetchall()
+    return render(request, 'mylist.html', {'username' :username, 'flag' :flag, 'anime_list' :anime_list, 'query' : query})
+    
 def start(request):
     return render(request,'start.html')
+
+def anime_profile(request,id):
+    with connection.cursor() as cursor:
+        cursor.execute("SELECT * FROM Anime WHERE id = %s;", [id])
+        anime = cursor.fetchall()[0]
+    return render(request,'anime_profile.html',{'anime':anime})
+
+
+
+
 
 
     

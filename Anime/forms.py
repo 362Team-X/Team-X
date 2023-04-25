@@ -11,4 +11,6 @@ class Sign_upForm(forms.Form):
     
 class log_inForm(forms.Form):
     name = forms.CharField()
-    
+
+class user_searchForm(forms.Form):
+    name = forms.CharField()
