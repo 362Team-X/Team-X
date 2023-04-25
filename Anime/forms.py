@@ -2,7 +2,6 @@ from django import forms
 
 class SearchForm(forms.Form):
     anime_title = forms.CharField()
-    source = forms.CharField()
     
 class Sign_upForm(forms.Form):
     name = forms.CharField()

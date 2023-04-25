@@ -18,7 +18,8 @@ def search_anime(request):
             
             # Query the database for anime with the given Japanese title
             with connection.cursor() as cursor:
-                cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), 'Original'])
+                cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source = %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), 'Original'])
+                print("anime")
                 anime_list = cursor.fetchall()
             # Render the results template with the list of anime
             return render(request, 'anime_results.html', {'anime_list': anime_list})
@@ -39,7 +40,8 @@ def search_manga(request):
             
             # Query the database for anime with the given Japanese title
             with connection.cursor() as cursor:
-                cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), 'Novel'])
+                cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source = %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), 'Manga'])
+                print("manga")
                 anime_list = cursor.fetchall()
             # Render the results template with the list of anime
             return render(request, 'anime_results.html', {'anime_list': anime_list})
@@ -59,7 +61,7 @@ def search_novel(request):
             
             # Query the database for anime with the given Japanese title
             with connection.cursor() as cursor:
-                cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source ILIKE %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), 'Original'])
+                cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source ILIKE %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), '%{}%'.format('novel')])
                 anime_list = cursor.fetchall()
             # Render the results template with the list of anime
             return render(request, 'anime_results.html', {'anime_list': anime_list})
@@ -112,14 +114,17 @@ def profile(request,username):
 def friends(request,username):
     with connection.cursor() as cursor:
         cursor.execute("SELECT name1 FROM friends WHERE name2 = %s UNION SELECT name2 FROM friends WHERE name1 = %s;", [username, username])
-        stats = cursor.fetchall()
-    return render(request,'friends.html',{'stats':stats})
+        friends = cursor.fetchall()
+    return render(request,'friends.html',{'friends':friends})
 
 def mylist(request,username):
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM Stats WHERE name = %s;", [username])
         friends = cursor.fetchall()
     return render(request,'myprofile.html',{'stats':friends})
+
+def start(request):
+    return render(request,'start.html')
 
 
     
