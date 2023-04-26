@@ -14,3 +14,12 @@ class log_inForm(forms.Form):
 
 class user_searchForm(forms.Form):
     name = forms.CharField()
+
+class GenreForm(forms.Form):
+    GENRES = [
+        ('comedy', 'Comedy'),
+        ('drama', 'Drama'),
+        ('action', 'Action'),
+        ('horror', 'Horror'),
+    ]
+    genre = forms.ChoiceField(choices=GENRES)
