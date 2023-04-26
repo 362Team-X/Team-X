@@ -15,4 +15,6 @@ urlpatterns = [
     path('mylist_s/<str:username>/', views.mylist_s, name = 'mylist_s'),
     path('search_anime/<int:id>/',views.anime_profile,name = 'animeprofile'),
     path('userpage/<str:username>/<str:username2>/', views.userpage, name = 'userprofile'),
+    path('inbox/<str:username>',views.inbox,name = 'inbox'),
+    path('recommended/<str:username>/',views.recommend, name='recommended')
 ]
