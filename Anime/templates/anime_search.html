@@ -1,5 +1,110 @@
-<form action = "" method = "post">
-  {% csrf_token %}
-  {{form}}
-  <input type = "submit" value = Submit>
-</form>
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>Anime Search Results</title>
+</head>
+
+<body>
+  <form action = "" method = "post">
+    {% csrf_token %}
+    {{form}}
+    <input type = "submit" value = Submit>
+
+    <input type="hidden" name="type" value="0">
+  </form>
+  <form action = "" method = "post">
+    {% csrf_token %}
+    {{genre_form}}
+    <input type = "submit" value = Submit>
+
+    <input type="hidden" name="type" value="1">
+  </form>
+  <h2>Top 10</h2>
+
+  {% if top_list %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>English Title</th>
+        <th>Japanese Title</th>
+        <th>Episodes</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for anime in top_list %}
+        <tr>
+          <td><a href="{% url 'animeprofile' anime.0 %}"><button>View</button></a></td>
+          <td>{{ anime.1}}</td>
+          <td>{{ anime.2}}</td>
+          <td>{{ anime.3}}</td>
+          <td>{{ anime.4}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No results found.</p>
+  {% endif %}
+
+  <h2>Yearly Specials</h2>
+  {% if yearly_list %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>English Title</th>
+        <th>Japanese Title</th>
+        <th>Episodes</th>
+        <th>Year From</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for anime in yearly_list %}
+        <tr>
+          <td><a href="{% url 'animeprofile' anime.0 %}"><button>View</button></a></td>
+          <td>{{ anime.1}}</td>
+          <td>{{ anime.2}}</td>
+          <td>{{ anime.3}}</td>
+          <td>{{ anime.4}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p>No results found.</p>
+  {% endif %} 
+  <h2>Most Favourite</h2>
+  {% if yearly_list %}
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>English Title</th>
+        <th>Japanese Title</th>
+        <th>Episodes</th>
+        <th>Score</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for anime in mostfav_list %}
+        <tr>
+          <td><a href="{% url 'animeprofile' anime.0 %}"><button>View</button></a></td>
+          <td>{{ anime.1}}</td>
+          <td>{{ anime.2}}</td>
+          <td>{{ anime.3}}</td>
+          <td>{{ anime.4}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+    <p>No results found.</p>
+  {% endif %} 
+
+</body>
+</html>
+
