@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Stats</title>
+  </head>
+  <body>
+    <h1>Inbox</h1>
+    {% if users %}
+      <table>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Accept</th>
+            <th>Reject</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for user in users %}
+            <tr>
+              <td>{{ user}}</td>
+              <td>
+                <form action = "" method = "post">
+                  {% csrf_token %}
+                  <input type = "hidden" name="action" value="accept">
+                  <input type = "hidden" name="user_name" value="{{ user}}">
+                  <input type = "submit" value = "Accept">
+                </form>
+              </td>
+              <td>
+                <form action = "" method = "post">
+                  {% csrf_token %}
+                  <input type = "hidden" name="action" value="reject">
+                  <input type = "hidden" name="user_name" value="{{ user}}">
+                  <input type = "submit" value = "Reject">
+                </form>
+              </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No results found.</p>
+    {% endif %}
+  </body>
+</html>
