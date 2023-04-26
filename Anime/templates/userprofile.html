@@ -6,20 +6,28 @@
   </head>
   <body>
     <h1>Anime Search Results</h1>
+
     {% if stats %}
       <table>
         <thead>
           <tr>
+            <th> Add </th>
             <th>Name</th>
             <th>Completed</th>
             <th>Episodes Watched</th>
             <th>Watching</th>
-            <th>Planing</th>
+            <th>Planning</th>
           </tr>
         </thead>
         <tbody>
             {% for anime in stats %}
             <tr>
+              <td>
+              <form action = "" method = "post">
+                {% csrf_token %}
+                <input type = "submit" value = "Add friend">
+              </form>
+              <td>
               <td>{{ anime.0}}</td>
               <td>{{ anime.1}}</td>
               <td>{{ anime.2}}</td>
