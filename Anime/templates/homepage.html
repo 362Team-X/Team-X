@@ -7,13 +7,13 @@
 	<div>
 		<h1>Welcome to MyAnimeSite</h1>
 		<p>Choose from the following options:</p>
-		<a href="{% url 'searchanime' %}"><button>Anime</button></a>
-		<a href="{% url 'searchmanga' %}"><button>Manga</button></a>
-        <a href="{% url 'searchnovel' %}"><button>Novels</button></a>
+		<a href="{% url 'searchanime' username%}"><button>Anime</button></a>
+		<a href="{% url 'searchmanga' username%}"><button>Manga</button></a>
+        <a href="{% url 'searchnovel' username%}"><button>Novels</button></a>
         <a href="{% url 'myprofile' username %}"><button>Profile</button></a>
         <a href="{% url 'friends' username %}"><button>Friends</button></a>
         <a href="{% url 'mylist' username %}"><button>mylist</button></a>
-	<a href="{% url 'inbox' username %}"><button>inbox</button></a>
+		<a href="{% url 'inbox' username %}"><button>inbox</button></a>
         <a href="{% url 'recommended' username %}"><button>Recommended for you</button></a>
 
 	</div>
@@ -39,7 +39,7 @@
         <tbody>
           {% for anime in anime_list %}
             <tr>
-              <td><a href="{% url 'animeprofile' anime.0 %}"><button>View</button></a></td>
+              <td><a href="{% url 'animeprofile' username anime.0 %}"><button>View</button></a></td>
               <td>{{ anime.1}}</td>
               <td>{{ anime.2}}</td>
               <td>{{ anime.3}}</td>

@@ -19,5 +19,17 @@
     <p> japanese_title : {{ anime.11}} </p>
     <p> type : {{ anime.12}} </p>
     <p> rating : {{ anime.14}} </p>
+    <h1>Anime Status</h1>
+    <form method="POST">
+      {% csrf_token %}
+      <label for="status">Status:</label>
+      <select name="status" id="status">
+        <option value="" {% if not val %} selected {% endif %}>Not chosen</option>
+        <option value="watching" {% if val == 1 %} selected {% endif %}>Watching</option>
+        <option value="completed" {% if val == 2 %} selected {% endif %}>Completed</option>
+        <option value="planning" {% if val == 3 %} selected {% endif %}>Planning</option>
+      </select>
+      <input type="submit" value="Save">
+    </form>
   </body>
 </html>

@@ -1,5 +1,35 @@
-<form action = "" method = "post">
-    {% csrf_token %}
-    {{form}}
-    <input type = "submit" value = Submit>
-</form>
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Log In</title>
+  </head>
+  <body>
+    {% if flag %}
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Log In</button>
+      </form>
+    {% endif %}  
+
+    {% if user_flag %}
+      <h2>Incorrect Username!</h2>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Log In</button>
+      </form>
+    {% endif %}
+
+    {% if passcode_flag %}
+      <h2>Incorrect Passcode!.</h2>
+      <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Log In</button>
+      </form>
+    {% endif %}
+
+  </body>
+</html>

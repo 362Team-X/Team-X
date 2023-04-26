@@ -37,7 +37,7 @@
     <tbody>
       {% for anime in top_list %}
         <tr>
-          <td><a href="{% url 'animeprofile' anime.0 %}"><button>View</button></a></td>
+          <td><a href="{% url 'animeprofile' username anime.0 %}"><button>View</button></a></td>
           <td>{{ anime.1}}</td>
           <td>{{ anime.2}}</td>
           <td>{{ anime.3}}</td>
@@ -65,7 +65,7 @@
     <tbody>
       {% for anime in yearly_list %}
         <tr>
-          <td><a href="{% url 'animeprofile' anime.0 %}"><button>View</button></a></td>
+          <td><a href="{% url 'animeprofile' username anime.0 %}"><button>View</button></a></td>
           <td>{{ anime.1}}</td>
           <td>{{ anime.2}}</td>
           <td>{{ anime.3}}</td>
@@ -92,7 +92,7 @@
     <tbody>
       {% for anime in mostfav_list %}
         <tr>
-          <td><a href="{% url 'animeprofile' anime.0 %}"><button>View</button></a></td>
+          <td><a href="{% url 'animeprofile' username anime.0 %}"><button>View</button></a></td>
           <td>{{ anime.1}}</td>
           <td>{{ anime.2}}</td>
           <td>{{ anime.3}}</td>
@@ -107,4 +107,3 @@
 
 </body>
 </html>
-
