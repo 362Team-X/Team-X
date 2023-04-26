@@ -250,7 +250,7 @@ def inbox(request,username):
 
 def recommend(request,username):
     with connection.cursor() as cursor:
-        cursor.execute("WITH temp AS(SELECT genre FROM Genre_count WHERE name = '0' ORDER BY count DESC LIMIT 2), temp2 as (SELECT DISTINCT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,score,genres FROM temp,anime WHERE genre = ANY(genres)  ORDER BY score DESC LIMIT 50) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,genres FROM temp2;")
+        cursor.execute("WITH temp AS(SELECT genre FROM Genre_count WHERE name = %s ORDER BY count DESC LIMIT 2), temp2 as (SELECT DISTINCT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,score,genres FROM temp,anime WHERE genre = ANY(genres)  ORDER BY score DESC LIMIT 50) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,genres FROM temp2;",[username])
         anime_list = cursor.fetchall()
     return render(request,'recommended.html',{'username':username,'anime_list': anime_list})
 
