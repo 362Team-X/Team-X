@@ -129,7 +129,7 @@ def sign_up(request):
     else:
         form = Sign_upForm()    
     # Render the search template with the search form
-    return render(request, 'anime_search.html', {'form': form})
+    return render(request, 'login.html', {'form': form})
 
 def login(request):
     if request.method == 'POST':
