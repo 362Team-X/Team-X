@@ -14,9 +14,10 @@
           </tr>
         </thead>
         <tbody>
-          {% for anime in friends %}
+          {% for friend in friends %}
             <tr>
-              <td>{{ anime.0}}</td>
+              <td>{{ friend.0}}</td>
+              <td><a href="{% url 'friendprofile' username friend.0 %}"><button>View</button></a></td>
             </tr>
           {% endfor %}
         </tbody>

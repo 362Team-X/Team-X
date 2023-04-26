@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>User Stats</title>
+  </head>
+  <body>
+    <h1>Anime Search Results</h1>
+
+    {% if stats %}
+      <table>
+        <thead>
+          <tr>
+            <th> Add </th>
+            <th>Name</th>
+            <th>Completed</th>
+            <th>Episodes Watched</th>
+            <th>Watching</th>
+            <th>Planning</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for anime in stats %}
+            <tr>
+              <td>{{ anime.0}}</td>
+              <td>{{ anime.1}}</td>
+              <td>{{ anime.2}}</td>
+              <td>{{ anime.3}}</td>
+              <td>{{ anime.4}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+    {% else %}
+      <p>No results found.</p>
+    {% endif %}
+
+      <div>
+          <h1>UserAnimeSite</h1>
+          <p>Choose from the following options:</p>
+          <a href="{% url 'friendprofile_s' username username1%}?status=1"><button>Completed</button></a>
+          <a href="{% url 'friendprofile_s' username username1%}?status=2"><button>Planing</button></a>
+          <a href="{% url 'friendprofile_s' username username1%}?status=3"><button>Favourites</button></a>
+          <a href="{% url 'friendprofile_s' username username1%}?status=4"><button>Watching</button></a>
+      </div>
+      {% if flag %}
+          <h1>Anime Search Results</h1>
+          {% if anime_list %}
+          <table>
+              <thead>
+              <tr>
+                  <th>ID</th>
+                  <th>English Title</th>
+                  <th>Japanese Title</th>
+                  <th>Episodes</th>
+                  <th>Aired From</th>
+                  <th>Aired To</th>
+                  {% if query == '1'%}
+                      <th>Score</th>
+                  {% endif %}
+              </tr>
+              </thead>
+              <tbody>
+              {% for anime in anime_list %}
+                  <tr>
+                  <td>{{ anime.0}}</td>
+                  <td>{{ anime.1}}</td>
+                  <td>{{ anime.2}}</td>
+                  <td>{{ anime.3}}</td>
+                  <td>{{ anime.4}}</td>
+                  <td>{{ anime.5}}</td>
+                  {% if query == '1'%}
+                      <td>{{ anime.6}}</td>
+                  {% endif %}
+                  </tr>
+              {% endfor %}
+              </tbody>
+          </table>
+          {% else %}
+          <p>No results found.</p>
+          {% endif %}
+      {% endif %}
+    </body>
+  </html>
