@@ -8,25 +8,22 @@ from datetime import date
 def home(request):
     return HttpResponse("Welcome to anime recommender")
 
-def search_anime(request):
-    
+def search_anime(request):   
     with connection.cursor() as cursor:
         cursor.execute("WITH temp AS (SELECT id,eng_title,japanese_title,episodes,EXTRACT(YEAR FROM aired_from) As year_from,COUNT(*) AS num_watched FROM Completed,Anime WHERE Anime.id = Completed.animeid AND Anime.source = %s GROUP BY id,eng_title,japanese_title,episodes,year_from), temp2 AS(SELECT id,eng_title,japanese_title,episodes,year_from,num_watched,rank() over(partition by year_from ORDER BY num_watched DESC) AS row_num FROM temp ) SELECT id,eng_title,japanese_title,episodes,year_from FROM temp2 WHERE row_num = 1 ORDER BY year_from DESC;", ['Original'])
         yearly_list = cursor.fetchall()
         cursor.execute("WITH temp AS(SELECT animeid,COUNT(*) as num_users FROM Favourites WHERE Source = %s GROUP BY animeid ORDER BY num_users DESC LIMIT 10) SELECT  ID,eng_title,japanese_title,episodes,anime.score FROM temp,anime WHERE animeid = id;", ['Original'])
         mostfav_list = cursor.fetchall()   
-    form = SearchForm()
-    genre_form = GenreForm()
     if request.method == 'POST':   
-        val = request.POST.get('type')   
-        if val:
+        val = request.POST.get('type')  
+        if (val=='1'):
             genre_form = GenreForm(request.POST)
-            if form.is_valid():
-                genre = form.cleaned_data['genre']
+            if genre_form.is_valid():
+                genre = genre_form.cleaned_data['genre']
+                form = SearchForm()
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime WHERE %s = ANY(genres) AND source = %s LIMIT 20;",[genre,'Original'])
+                    cursor.execute("SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime WHERE %s = ANY(genres) AND source = %s LIMIT 10;",[genre,'Original'])
                     top_list = cursor.fetchall()
-                    return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form })
         else:
             form = SearchForm(request.POST)
             if form.is_valid():
@@ -36,32 +33,32 @@ def search_anime(request):
                     anime_list = cursor.fetchall()
             return render(request, 'anime_results.html', {'anime_list': anime_list})
     else:
+        form = SearchForm()
+        genre_form = GenreForm()   
         with connection.cursor() as cursor:
             cursor.execute("SELECT  Anime.ID,eng_title,japanese_title,episodes,score FROM Anime  WHERE source = %s ORDER BY score DESC LIMIT 10;",['Original'])
-            top_list = cursor.fetchall()
-            return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form })
-        
-
+            top_list = cursor.fetchall()      
     # Render the search template with the search form
     return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form })
 
 
-def search_manga(request):   
-    
+def search_manga(request):       
     with connection.cursor() as cursor:
         cursor.execute("WITH temp AS (SELECT id,eng_title,japanese_title,episodes,EXTRACT(YEAR FROM aired_from) As year_from,COUNT(*) AS num_watched FROM Completed,Anime WHERE Anime.id = Completed.animeid AND Anime.source = %s GROUP BY id,eng_title,japanese_title,episodes,year_from), temp2 AS(SELECT id,eng_title,japanese_title,episodes,year_from,num_watched,rank() over(partition by year_from ORDER BY num_watched DESC) AS row_num FROM temp ) SELECT id,eng_title,japanese_title,episodes,year_from FROM temp2 WHERE row_num = 1 ORDER BY year_from DESC;", ['Manga'])
         yearly_list = cursor.fetchall()
         cursor.execute("WITH temp AS(SELECT animeid,COUNT(*) as num_users FROM Favourites WHERE Source = %s GROUP BY animeid ORDER BY num_users DESC LIMIT 10) SELECT  ID,eng_title,japanese_title,episodes,anime.score FROM temp,anime WHERE animeid = id;", ['Manga'])
-        mostfav_list = cursor.fetchall()
-        
+        mostfav_list = cursor.fetchall()        
     if request.method == 'POST':   
         val = request.POST.get('type')   
-        if val:
-            form = GenreForm(request.POST)
-            if form.is_valid():
-                genre = form.cleaned_data['genre']
+        genre_form = GenreForm(request.POST)
+        form = SearchForm(request.POST)
+        if (val == '1'):
+            genre_form = GenreForm(request.POST)
+            if genre_form.is_valid():
+                genre = genre_form.cleaned_data['genre']
+                form = SearchForm()
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime WHERE %s = ANY(genres) AND source = %s LIMIT 20;",[genre,'Manga'])
+                    cursor.execute("SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime WHERE %s = ANY(genres) AND source = %s LIMIT 10;",[genre,'Manga'])
                     top_list = cursor.fetchall()           
         else:
             form = SearchForm(request.POST)
@@ -73,31 +70,30 @@ def search_manga(request):
                     anime_list = cursor.fetchall()
                 return render(request, 'anime_results.html', {'anime_list': anime_list})
     else:
+        form = SearchForm()
+        genre_form = GenreForm()
         with connection.cursor() as cursor:
             cursor.execute("SELECT Anime.ID,eng_title,japanese_title,episodes,score FROM Anime  WHERE source = %s ORDER BY score DESC LIMIT 10;",['Manga'])
             top_list = cursor.fetchall()
-        form = SearchForm()
-        genre_form = GenreForm()
 
     # Render the search template with the search form
-    return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list': top_list})
+    return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form })
 
-def search_novel(request):
-    
+def search_novel(request):   
     with connection.cursor() as cursor:
         cursor.execute("WITH temp AS (SELECT id,eng_title,japanese_title,episodes,EXTRACT(YEAR FROM aired_from) As year_from,COUNT(*) AS num_watched FROM Completed,Anime WHERE Anime.id = Completed.animeid AND Anime.source ILIKE %s GROUP BY id,eng_title,japanese_title,episodes,year_from), temp2 AS(SELECT id,eng_title,japanese_title,episodes,year_from,num_watched,rank() over(partition by year_from ORDER BY num_watched DESC) AS row_num FROM temp ) SELECT id,eng_title,japanese_title,episodes,year_from FROM temp2 WHERE row_num = 1 ORDER BY year_from DESC;", ['%{}%'.format('novel')])
         yearly_list = cursor.fetchall()
         cursor.execute("WITH temp AS(SELECT animeid,COUNT(*) as num_users FROM Favourites WHERE Source ILIKE %s GROUP BY animeid ORDER BY num_users DESC LIMIT 10) SELECT ID,eng_title,japanese_title,episodes,anime.score FROM temp,anime WHERE animeid = id;", ['%{}%'.format('novel')])
-        mostfav_list = cursor.fetchall()
-        
+        mostfav_list = cursor.fetchall()        
     if request.method == 'POST':   
         val = request.POST.get('type')   
-        if val:
-            form = GenreForm(request.POST)
-            if form.is_valid():
-                genre = form.cleaned_data['genre']
+        if (val == '1'):
+            genre_form = GenreForm(request.POST)
+            if genre_form.is_valid():
+                genre = genre_form.cleaned_data['genre']
+                form = SearchForm()
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime WHERE %s = ANY(genres) AND source ILIKE %s LIMIT 20;",[genre, '%{}%'.format('novel')])
+                    cursor.execute("SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime WHERE %s = ANY(genres) AND source ILIKE %s LIMIT 10;",[genre, '%{}%'.format('novel')])
                     top_list = cursor.fetchall()              
         else:       
             form = SearchForm(request.POST)
@@ -108,13 +104,13 @@ def search_novel(request):
                     anime_list = cursor.fetchall()
                 return render(request, 'anime_results.html', {'anime_list': anime_list})
     else:
+        form = SearchForm()
+        genre_form = GenreForm()
         with connection.cursor() as cursor:
             cursor.execute("SELECT  Anime.ID,eng_title,japanese_title,episodes,score FROM Anime  WHERE source ILIKE %s ORDER BY score DESC LIMIT 10;",['%{}%'.format('novel')])
             top_list = cursor.fetchall()
-        form = SearchForm()
-
     # Render the search template with the search form
-    return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list': top_list})
+    return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form })
 
 def sign_up(request):
     if request.method == 'POST':
