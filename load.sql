@@ -1,0 +1,10 @@
+BEGIN TRANSACTION;
+COPY Studio FROM '/home/vignesh/Desktop/DBMS_Project/Database/studio_new.csv' WITH CSV HEADER DELIMITER AS ',';
+COPY anime FROM '/home/vignesh/Desktop/DBMS_Project/Database/anime_new.csv' WITH CSV HEADER DELIMITER AS ',';
+COPY users(name,gender,birthdate,location,joindate,inbox) FROM '/home/vignesh/Desktop/DBMS_Project/Database/Users.csv' WITH CSV HEADER DELIMITER AS ',';
+COPY Favourites FROM '/home/vignesh/Desktop/DBMS_Project/Database/Favourites.csv' WITH CSV HEADER DELIMITER AS ',';
+COPY Completed FROM '/home/vignesh/Desktop/DBMS_Project/Database/Completed.csv' WITH CSV HEADER DELIMITER AS ',';
+COPY Planning FROM '/home/vignesh/Desktop/DBMS_Project/Database/Planning.csv' WITH CSV HEADER DELIMITER AS ',';
+COPY genre_count FROM '/home/vignesh/Desktop/DBMS_Project/Database/Genre_count.csv' WITH CSV HEADER DELIMITER AS ',';
+COPY stats FROM '/home/vignesh/Desktop/DBMS_Project/Database/stats.csv' WITH CSV HEADER DELIMITER AS ',';
+END TRANSACTION;
