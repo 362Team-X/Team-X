@@ -4,16 +4,16 @@ class SearchForm(forms.Form):
     anime_title = forms.CharField()
     
 class Sign_upForm(forms.Form):
-    name = forms.CharField()
-    passcode = forms.CharField()
-    confirm_passcode = forms.CharField()
-    gender = forms.CharField()
-    birthdate = forms.DateField()
-    location = forms.CharField()
+    Name = forms.CharField()
+    Password = forms.CharField(widget=forms.PasswordInput)
+    Confirm_password = forms.CharField(widget=forms.PasswordInput)
+    Gender = forms.CharField()
+    Birthdate = forms.DateField()
+    Location = forms.CharField()
     
 class log_inForm(forms.Form):
-    name = forms.CharField()
-    passcode = forms.CharField()    
+    Username = forms.CharField()
+    Password = forms.CharField(widget=forms.PasswordInput)    
 
 class user_searchForm(forms.Form):
     name = forms.CharField()

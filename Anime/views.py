@@ -118,12 +118,12 @@ def sign_up(request):
     if request.method == 'POST':
         form = Sign_upForm(request.POST)
         if form.is_valid():
-            I1 = form.cleaned_data['name']
-            I6 = form.cleaned_data['passcode']
-            I7 = form.cleaned_data['confirm_passcode']
-            I2 = form.cleaned_data['gender']
-            I3 = form.cleaned_data['birthdate']
-            I4 = form.cleaned_data['location']
+            I1 = form.cleaned_data['Name']
+            I6 = form.cleaned_data['Password']
+            I7 = form.cleaned_data['Confirm_password']
+            I2 = form.cleaned_data['Gender']
+            I3 = form.cleaned_data['Birthdate']
+            I4 = form.cleaned_data['Location']
             I5 = date.today()
             with connection.cursor() as cursor:
                 cursor.execute("Select name from Users where name = %s",[I1])
@@ -155,8 +155,8 @@ def login(request):
     if request.method == 'POST':
         form = log_inForm(request.POST)
         if form.is_valid():
-            I1 = form.cleaned_data['name']
-            I2 = form.cleaned_data['passcode']
+            I1 = form.cleaned_data['Username']
+            I2 = form.cleaned_data['Password']
             with connection.cursor() as cursor:
                 cursor.execute("Select name, password from Users where name = %s",[I1])
                 up_list = cursor.fetchall()
@@ -247,11 +247,11 @@ def mylist_s(request, username):
         if(query == '1'):
             cursor.execute("WITH temp AS (SELECT animeid,score FROM completed WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,temp.score FROM anime, temp WHERE animeid=ID;", [username])
         elif(query == '2'):
-            cursor.execute("WITH temp AS (SELECT animeid FROM planning WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime, temp WHERE animeid=ID;", [username])
+            cursor.execute("WITH temp AS (SELECT animeid FROM planning WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,score FROM anime, temp WHERE animeid=ID;", [username])
         elif(query == '4'):
-            cursor.execute("WITH temp AS (SELECT animeid FROM watching WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime, temp WHERE animeid=ID;", [username])
+            cursor.execute("WITH temp AS (SELECT animeid FROM watching WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,score FROM anime, temp WHERE animeid=ID;", [username])
         elif(query == '3'):
-            cursor.execute("WITH temp AS (SELECT animeid FROM Favourites WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime, temp WHERE animeid=ID;", [username])
+            cursor.execute("WITH temp AS (SELECT animeid FROM Favourites WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,score FROM anime, temp WHERE animeid=ID;", [username])
         else:
             flag = False
         anime_list = []
