@@ -19,7 +19,7 @@ class user_searchForm(forms.Form):
     name = forms.CharField()
 
 class GenreForm(forms.Form):
-    GENRES = [        
+    GENRES = [    
         ('Action', 'Action'),
         ('Adventure', 'Adventure'),
         ('Cars', 'Cars'),
@@ -32,3 +32,4 @@ class GenreForm(forms.Form):
         ('Vampire', 'Vampire'),
     ]
     genre = forms.ChoiceField(choices=GENRES)
+    

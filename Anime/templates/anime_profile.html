@@ -19,6 +19,17 @@
     <p> japanese_title : {{ anime.11}} </p>
     <p> type : {{ anime.12}} </p>
     <p> rating : {{ anime.14}} </p>
+
+    {% if val_f %}
+    <button >Added to Favorites!</button>
+    {% else %}
+      <form method="post" name="add-to-fav-form">
+        {% csrf_token %}
+        <input type="hidden" name="type" value="1">
+        <button type="submit" name="add-to-fav-btn">Add to Favorites</button>
+      </form>  
+    {% endif %}  
+
     <h1>Anime Status</h1>
     <form method="POST">
       {% csrf_token %}
@@ -30,6 +41,7 @@
         <option value="planning" {% if val == 3 %} selected {% endif %}>Planning</option>
       </select>
       <input type="submit" value="Save">
+      <input type="hidden" name="type" value="0">
     </form>
   </body>
 </html>

@@ -233,6 +233,16 @@ def mylist(request,username):
 def mylist_s(request, username):
     query = request.GET.get('status', '')
     flag = True
+    if request.method == 'POST':
+        id = int(request.POST.get('type'))
+        score = int(request.POST['score'])
+        with connection.cursor() as cursor:
+            if(score == 0):
+                cursor.execute("DELETE FROM Completed WHERE name= %s AND animeid = %s;",[username, id])    
+            else:
+                cursor.execute("UPDATE Completed SET score = %s WHERE animeid = %s AND name = %s;", [score, id, username])
+                cursor.execute("UPDATE Anime SET num_scored_by =num_scored_by +1,score = ((SELECT score FROM Anime WHERE id = %s)*(num_scored_by-1)*(1.0) + %s *(1.0))/(num_scored_by) WHERE ID = %s;",[id,score,id])
+
     with connection.cursor() as cursor:
         if(query == '1'):
             cursor.execute("WITH temp AS (SELECT animeid,score FROM completed WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,temp.score FROM anime, temp WHERE animeid=ID;", [username])
@@ -244,7 +254,17 @@ def mylist_s(request, username):
             cursor.execute("WITH temp AS (SELECT animeid FROM Favourites WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime, temp WHERE animeid=ID;", [username])
         else:
             flag = False
-        anime_list = cursor.fetchall()
+        anime_list = []
+        for row in cursor.fetchall():
+            anime_list.append({
+                "id": row[0],
+                "eng": row[1],
+                "jap": row[2],
+                "epi": row[3],
+                "from": row[4],
+                "to": row[5],
+                "score": row[6]
+            })
     return render(request, 'mylist.html', {'username' :username, 'flag' :flag, 'anime_list' :anime_list, 'query' : query})
     
 def start(request):
@@ -252,40 +272,47 @@ def start(request):
 
 def anime_profile(request,username,id):
     if request.method == 'POST':
-        status = request.POST['status']
-        if status == 'watching':
+        val_h = request.POST.get('type') 
+        if(val_h == '1'):
             with connection.cursor() as cursor:
-                cursor.execute("DELETE FROM watching WHERE name= %s AND animeid = %s;",(username,id))
-                cursor.execute("DELETE FROM completed WHERE name= %s AND animeid = %s;",(username,id))
-                cursor.execute("DELETE FROM planning WHERE name= %s AND animeid = %s;",(username,id))
-                cursor.execute("INSERT INTO watching(name, animeid) VALUES (%s, %s);",(username,id))
-            return redirect('/homepage/{}/'.format(username))
-        elif status == 'completed':
-            with connection.cursor() as cursor:
-                cursor.execute("DELETE FROM watching WHERE name= %s AND animeid = %s;",(username,id))
-                cursor.execute("DELETE FROM completed WHERE name= %s AND animeid = %s;",(username,id))
-                cursor.execute("DELETE FROM planning WHERE name= %s AND animeid = %s;",(username,id))
-                cursor.execute("INSERT INTO completed(name, animeid) VALUES (%s, %s);",(username,id))
-            return redirect('/homepage/{}/'.format(username))
-        elif status == 'planning':
-            with connection.cursor() as cursor:
-                cursor.execute("DELETE FROM watching WHERE name= %s AND animeid = %s;",(username,id))
-                cursor.execute("DELETE FROM completed WHERE name= %s AND animeid = %s;",(username,id))
-                cursor.execute("DELETE FROM planning WHERE name= %s AND animeid = %s;",(username,id))
-                cursor.execute("INSERT INTO planning(name, animeid) VALUES (%s, %s);",(username,id))
+                cursor.execute("INSERT INTO favourites(name, animeid) VALUES (%s, %s);",(username,id))
             return redirect('/homepage/{}/'.format(username))
         else:
-            with connection.cursor() as cursor:
-                cursor.execute("DELETE FROM watching WHERE name= %s AND animeid = %s;",(username,id))
-                cursor.execute("DELETE FROM completed WHERE name= %s AND animeid = %s;",(username,id))
-                cursor.execute("DELETE FROM planning WHERE name= %s AND animeid = %s;",(username,id)) 
-            return redirect('/homepage/{}/'.format(username))
+            status = request.POST['status']
+            if status == 'watching':
+                with connection.cursor() as cursor:
+                    cursor.execute("DELETE FROM watching WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("DELETE FROM completed WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("DELETE FROM planning WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("INSERT INTO watching(name, animeid) VALUES (%s, %s);",(username,id))
+                return redirect('/homepage/{}/'.format(username))
+            elif status == 'completed':
+                with connection.cursor() as cursor:
+                    cursor.execute("DELETE FROM watching WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("DELETE FROM completed WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("DELETE FROM planning WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("INSERT INTO completed(name, animeid) VALUES (%s, %s);",(username,id))
+                return redirect('/homepage/{}/'.format(username))
+            elif status == 'planning':
+                with connection.cursor() as cursor:
+                    cursor.execute("DELETE FROM watching WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("DELETE FROM completed WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("DELETE FROM planning WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("INSERT INTO planning(name, animeid) VALUES (%s, %s);",(username,id))
+                return redirect('/homepage/{}/'.format(username))
+            else:
+                with connection.cursor() as cursor:
+                    cursor.execute("DELETE FROM watching WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("DELETE FROM completed WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("DELETE FROM planning WHERE name= %s AND animeid = %s;",(username,id)) 
+                return redirect('/homepage/{}/'.format(username))
 
     else:
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM Anime WHERE id = %s;", [id])
             anime = cursor.fetchall()[0]
         val = 0
+        val_f = False
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM watching where name = %s AND animeid = %s",(username,id))
             l = cursor.fetchall()
@@ -301,8 +328,13 @@ def anime_profile(request,username,id):
             l = cursor.fetchall()
             if(len(l) != 0):
                 val = 3
-        
-        return render(request,'anime_profile.html',{'anime':anime,'val':val})
+                
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM favourites where name = %s AND animeid = %s",(username,id))
+            l = cursor.fetchall()
+            if(len(l) != 0):
+                val_f = True
+        return render(request,'anime_profile.html',{'anime':anime,'val':val, 'val_f': val_f, 'username': username})
 
 def inbox(request,username):
     if request.method == 'POST':
