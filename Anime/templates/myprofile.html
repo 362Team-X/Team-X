@@ -3,18 +3,70 @@
   <head>
     <meta charset="utf-8">
     <title>Stats</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #F0F2F5;
+      }
+      h1 {
+        font-size: 36px;
+        text-align: center;
+        margin: 40px 0;
+        color: #333333;
+      }
+      table {
+        border-collapse: collapse;
+        width: 80%;
+        margin: 0 auto;
+        background-color: #FFFFFF;
+        box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        overflow: hidden;
+        margin-bottom: 40px;
+      }
+      th {
+        background-color: #2c6a9f;
+        color: #FFFFFF;
+        font-size: 18px;
+        text-align: left;
+        padding: 15px;
+      }
+      td {
+        font-size: 16px;
+        text-align: left;
+        padding: 10px 15px;
+        border-bottom: 1px solid #CCCCCC;
+      }
+      td:first-child {
+        font-weight: bold;
+      }
+      tr:nth-child(even) {
+        background-color: #F7F7F7;
+      }
+      tr:hover {
+        background-color: #F2F2F2;
+      }
+      p {
+        font-size: 18px;
+        text-align: center;
+        margin: 40px 0;
+        color: #666666;
+      }
+    </style>
   </head>
   <body>
-    <h1>Anime Search Results</h1>
+    <h1>My Profile</h1>
     {% if stats %}
       <table>
         <thead>
           <tr>
             <th>Name</th>
             <th>Completed</th>
-            <th>Episodes Watched</th>
+            <th>Episodes watched</th>
             <th>Watching</th>
-            <th>Planing</th>
+            <th>Planning</th>
           </tr>
         </thead>
         <tbody>
