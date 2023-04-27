@@ -3,34 +3,95 @@
   <head>
     <meta charset="UTF-8">
     <title>Sign Up</title>
+    <style>
+      html {
+        height: 100%;
+      }
+      body {
+        margin:0;
+        padding:0;
+        font-family: sans-serif;
+        background: linear-gradient(#0c42a7, #243b55);
+      }
+
+      form {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: rgb(255, 251, 251);
+        width: 400px;
+        padding: 30px;
+        
+        box-sizing: border-box;
+        box-shadow: 0 15px 25px rgba(0,0,0,1);
+        border-radius: 10px;
+      }
+      form h2 {
+        margin: 0 0 40px;
+        padding: 0;
+        color: #df1a1a;
+        text-align: center;
+      }
+      form input {
+        width: 100%;
+        padding: 10px 0;
+        font-size: 16px;
+        color: #130a0a;
+        margin-bottom: 30px;
+        text-align: left;
+        border: none;
+        border-bottom: 1px solid #110a0a;
+        outline: none;
+        background: transparent;
+      }
+      form button {
+        display: block;
+        margin: 0 auto;
+        background-color: #3e516e;
+        border: none;
+        color: white;
+        padding: 14px 40px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        font-size: 16px;
+        margin-top: 30px;
+        cursor: pointer;
+        border-radius: 10px;
+      }
+    </style>
   </head>
   <body>
-
     {% if flag %}
       <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Sign Up</button>
+        <div style = "text-align: center;"> 
+        <button class="btn btn-outline-info"> Sign Up </button>
       </form>
     {% endif %}  
 
     {% if name_flag %}
-      <h2>Username Already Exists!.Try Another</h2>
+      <h2 style="text-align:center;">Username Already Exists! Try Another</h2>
       <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Sign Up</button>
+        <div style = "text-align: center;"> 
+          <button class="btn btn-outline-info"> Sign Up </button>
+        </div>
       </form>
     {% endif %}
 
     {% if confirm_flag %}
-      <h2>Confirm The Passcode Again!.</h2>
+      <h2 style="text-align:center;">Confirm The Passcode Again!</h2>
       <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Sign Up</button>
+        <div style = "text-align: center;"> 
+          <button class="btn btn-outline-info"> Sign Up </button>
+        </div>
       </form>
     {% endif %}
-
   </body>
 </html>
