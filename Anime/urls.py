@@ -19,4 +19,5 @@ urlpatterns = [
     path('recommended/<str:username>/',views.recommend, name='recommended'),
     path('friends/<str:username>/<str:username1>/', views.friendprofile, name = 'friendprofile'),
     path('friends_s/<str:username>/<str:username1>/', views.friendprofile_s, name ='friendprofile_s'),
+    path('removelist/<str:username>/<int:id>/', views.removelist, name = 'removelist'),
 ]

@@ -203,11 +203,24 @@ def homepage(request, username):
 
 def userpage(request, username, username2):
     if request.method == 'POST':
+        already_friend = False
         with connection.cursor() as cursor:
-            cursor.execute("SELECT inbox FROM users WHERE name = ''")
-        with connection.cursor() as cursor:
-            cursor.execute("UPDATE Users SET inbox = array_append(inbox,%s) WHERE name = %s;",[username,username2])
-        return render(request,'first.html')
+            cursor.execute("SELECT * FROM friends WHERE (name1 = %s AND name2 = %s) OR (name1 = %s AND name2 = %s) ",[username,username2,username2,username])
+            l = cursor.fetchall()
+            if(len(l) != 0):
+                already_friend = True
+        if(already_friend):
+            return render(request,'fourth.html')
+        else:
+            
+            with connection.cursor() as cursor:
+                cursor.execute("SELECT * FROM users WHERE name = %s AND %s = ANY(inbox)",[username2,username])
+                l = cursor.fetchall()
+                if(len(l) == 0):
+                    cursor.execute("UPDATE Users SET inbox = array_append(inbox,%s) WHERE name = %s;",[username,username2])
+                    return redirect("/homepage/{}".format(username))
+                else:
+                    return render(request,'third.html')
     else:
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM Stats WHERE name = %s;", [username2])
@@ -233,6 +246,8 @@ def mylist(request,username):
 def mylist_s(request, username):
     query = request.GET.get('status', '')
     flag = True
+    print(query)
+    print('ffffffff')
     if request.method == 'POST':
         id = int(request.POST.get('type'))
         score = int(request.POST['score'])
@@ -349,7 +364,7 @@ def inbox(request,username):
         elif action == 'reject':
             with connection.cursor() as cursor:
                 cursor.execute("UPDATE Users SET inbox = array_remove(inbox,%s) WHERE name = %s;",[name,username])
-        return redirect('/homepage/{}/'.format(username))
+        return redirect('/inbox/{}/'.format(username))
 
 
     else:
@@ -403,6 +418,19 @@ def my_view(request):
     return render(request, 'my_template.html', context)
 
 
+def removelist(request,username,id):
+    query = request.GET.get('status', '')
+    print(query)
+    with connection.cursor() as cursor:
+        if(query == '1'):
+            cursor.execute("DELETE FROM Completed WHERE name = %s AND animeid = %s ;", [username,id])
+        elif(query == '2'):
+            cursor.execute("DELETE FROM Planning WHERE name = %s AND animeid = %s ;", [username,id])
+        elif(query == '4'):
+            cursor.execute("DELETE FROM Watching WHERE name = %s AND animeid = %s ;", [username,id])
+        elif(query == '3'):
+            cursor.execute("DELETE FROM favourites WHERE name = %s AND animeid = %s ;", [username,id])
+    return redirect("/mylist_s/{}/?status={}".format(username,query))
 
 
 

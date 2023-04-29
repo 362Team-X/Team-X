@@ -118,6 +118,7 @@
                 {% if query == '1'%}
                     <th>Score</th>
                 {% endif %}
+				<th> Remove</th>
             </tr>
             </thead>
             <tbody>
@@ -152,6 +153,7 @@
                     </form>
                     </td>
                 {% endif %}
+				<td><a href="{% url 'removelist' username anime.id%}?status={{ query }}"><button>Remove</button></a></td>
                 </tr>
             {% endfor %}
             </tbody>
