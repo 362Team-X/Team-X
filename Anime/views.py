@@ -21,7 +21,7 @@ def search_anime(request, username):
                 genre = genre_form.cleaned_data['genre']
                 form = SearchForm()
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime WHERE %s = ANY(genres) AND source = %s LIMIT 10;",[genre,'Original'])
+                    cursor.execute("SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime WHERE %s = ANY(genres) AND source = %s ORDER BY score DESC LIMIT 10;",[genre,'Original'])
                     top_list = cursor.fetchall()
         else:
             form = SearchForm(request.POST)
@@ -57,7 +57,7 @@ def search_manga(request, username):
                 genre = genre_form.cleaned_data['genre']
                 form = SearchForm()
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime WHERE %s = ANY(genres) AND source = %s LIMIT 10;",[genre,'Manga'])
+                    cursor.execute("SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime WHERE %s = ANY(genres) AND source = %s ORDER BY score DESC LIMIT 10;",[genre,'Manga'])
                     top_list = cursor.fetchall()           
         else:
             form = SearchForm(request.POST)
@@ -92,7 +92,7 @@ def search_novel(request, username):
                 genre = genre_form.cleaned_data['genre']
                 form = SearchForm()
                 with connection.cursor() as cursor:
-                    cursor.execute("SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime WHERE %s = ANY(genres) AND source ILIKE %s LIMIT 10;",[genre, '%{}%'.format('novel')])
+                    cursor.execute("SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM anime WHERE %s = ANY(genres) AND source ILIKE %s ORDER BY score DESC LIMIT 10;",[genre, '%{}%'.format('novel')])
                     top_list = cursor.fetchall()              
         else:       
             form = SearchForm(request.POST)
@@ -187,7 +187,7 @@ def homepage(request, username):
             user_name = form.cleaned_data['name']
             # Query the database for anime with the given Japanese title
             with connection.cursor() as cursor:
-                cursor.execute("SELECT name FROM users WHERE name = %s;", [user_name])
+                cursor.execute("SELECT name FROM users WHERE name = %s AND name != %s;", [user_name,username])
                 user = cursor.fetchall()
             # Render the results template with the list of anime
                 if(len(user) == 0):
@@ -363,7 +363,7 @@ def inbox(request,username):
 
 def recommend(request,username):
     with connection.cursor() as cursor:
-        cursor.execute("WITH temp AS(SELECT genre FROM Genre_count WHERE name = %s ORDER BY count DESC LIMIT 2), temp2 as (SELECT DISTINCT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,score,genres FROM temp,anime WHERE genre = ANY(genres)  ORDER BY score DESC LIMIT 50) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,genres FROM temp2;",[username])
+        cursor.execute("WITH temp AS(SELECT genre FROM Genre_count WHERE name = %s ORDER BY count DESC LIMIT 2), temp2 as (SELECT DISTINCT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,score,genres FROM temp,anime WHERE genre = ANY(genres) AND ID NOT IN (SELECT animeid FROM Completed WHERE name = %s)  ORDER BY score DESC LIMIT 50) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,genres FROM temp2;",[username,username])
         anime_list = cursor.fetchall()
     return render(request,'recommended.html',{'username':username,'anime_list': anime_list})
 
@@ -396,7 +396,11 @@ def friendprofile_s(request,username,username1):
 
 
 
-
+def my_view(request):
+    username1 = 'example_user'
+    # other code here to get stats and anime_list
+    context = {'stats': stats, 'anime_list': anime_list, 'username1': username1}
+    return render(request, 'my_template.html', context)
 
 
 

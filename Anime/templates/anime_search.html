@@ -1,12 +1,95 @@
 <!DOCTYPE html>
 <html>
+<style>
 
+  /* Apply some global styles */
+body {
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.5;
+  padding: 10px;
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+table {
+			border-collapse: collapse;
+			width: 100%;
+			margin-top: 40px;
+			margin-bottom: 80px;
+		}
+		th {
+			background-color: #2c3e50;
+			color: #ffffff;
+			font-weight: 500;
+			padding: 12px;
+			text-align: center;
+			border: 1px solid #dddddd;
+		}
+		td {
+			padding: 12px;
+			text-align: center;
+			border: 1px solid #dddddd;
+		}
+		tr:nth-child(even) {
+			background-color: #f2f2f2;
+		}
+		tr:hover {
+			background-color: #ddd;
+		}
+
+button {
+  background-color: #3498db;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+/* Style the form inputs */
+form input[type="submit"] {
+  background-color: #3498db;
+  border: none;
+  color: white;
+  padding: 5px 10px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+  border-radius: 4px;
+  
+}
+form select{
+  height: 30px;
+    width: 100px;
+}
+form input[type="hidden"] {
+  display: none;
+  
+}
+
+form input[type="text"] {
+  height: 20px;
+    width: 250px;
+}
+</style>
 <head>
   <meta charset="utf-8">
   <title>Anime Search Results</title>
 </head>
 
 <body>
+  <div style="display: flex;">
   <form action = "" method = "post">
     {% csrf_token %}
     {{form}}
@@ -14,13 +97,14 @@
 
     <input type="hidden" name="type" value="0">
   </form>
-  <form action = "" method = "post">
+  <form style="margin-left: 100px;" action = "" method = "post">
     {% csrf_token %}
     {{genre_form}}
     <input type = "submit" value = Submit>
 
     <input type="hidden" name="type" value="1">
   </form>
+</div>
   <h2>Top 10</h2>
 
   {% if top_list %}

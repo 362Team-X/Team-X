@@ -2,102 +2,11 @@
 <html>
 <head>
 	<title>MyAnimeSite</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			margin: 0;
-			padding: 0;
-		}
-
-		h1 {
-			font-size: 36px;
-			margin: 20px 0;
-		}
-
-		p {
-			font-size: 18px;
-			margin-bottom: 10px;
-		}
-
-		a {
-			text-decoration: none;
-		}
-
-		button {
-			background-color: #428bca;
-			color: white;
-			border: none;
-			padding: 10px 20px;
-			margin: 10px;
-			cursor: pointer;
-			border-radius: 5px;
-		}
-        button:hover {
-        background-color: #2c6a9f;
-        transform: translateY(-5px);
-      }
-
-		table {
-			border-collapse: collapse;
-			margin-top: 20px;
-			width: 100%;
-		}
-
-		th, td {
-			padding: 10px;
-			text-align: left;
-			border-bottom: 1px solid #ddd;
-		}
-
-		th {
-			background-color: #428bca;
-			color: white;
-		}
-
-		form {
-			display: inline-block;
-			margin: 0;
-			padding: 0;
-		}
-
-		label {
-			margin-right: 10px;
-			font-size: 16px;
-		}
-
-		select {
-			font-size: 16px;
-			padding: 5px;
-			margin-right: 10px;
-		}
-
-		input[type="submit"] {
-			background-color: #428bca;
-			color: white;
-			border: none;
-			padding: 5px 10px;
-			border-radius: 5px;
-			cursor: pointer;
-		}
-
-		input[type="submit"]:hover {
-			background-color: #2c6a9f;
-		}
-
-		input[type="hidden"] {
-			display: none;
-		}
-
-		.no-results {
-			font-size: 18px;
-			color: red;
-			margin-top: 20px;
-		}
-	</style>
 </head>
 <body>
 	<div>
 		<h1>Welcome to MyAnimeSite</h1>
+		<p>Choose from the following options:</p>
 		<a href="{% url 'mylist_s' username%}?status=1"><button>Completed</button></a>
 		<a href="{% url 'mylist_s' username%}?status=2"><button>Planing</button></a>
         <a href="{% url 'mylist_s' username%}?status=3"><button>Favourites</button></a>

@@ -3,15 +3,116 @@
   <head>
     <meta charset="utf-8">
     <title>User Stats</title>
+
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 15px;
+      }
+  
+      h1 {
+        font-size: 36px;
+        margin: 20px 0;
+      }
+  
+      p {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+  
+      a {
+        text-decoration: none;
+      }
+  
+      button {
+        background-color: #428bca;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        margin: 10px;
+        cursor: pointer;
+        border-radius: 5px;
+      }
+          button:hover {
+          background-color: #2c6a9f;
+          transform: translateY(-5px);
+        }
+  
+      table {
+        border-collapse: collapse;
+        margin-top: 20px;
+        width: 100%;
+      }
+  
+      th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+      }
+  
+      th {
+        background-color: #428bca;
+        color: white;
+      }
+  
+      form {
+        display: inline-block;
+        margin: 0;
+        padding: 0;
+      }
+  
+      label {
+        margin-right: 10px;
+        font-size: 16px;
+      }
+  
+      select {
+        font-size: 16px;
+        padding: 5px;
+        margin-right: 10px;
+      }
+  
+      input[type="submit"] {
+        background-color: #428bca;
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+  
+      input[type="submit"]:hover {
+        background-color: #2c6a9f;
+      }
+  
+      input[type="hidden"] {
+        display: none;
+      }
+  
+      .no-results {
+        font-size: 18px;
+        color: red;
+        margin-top: 20px;
+      }
+      .active {
+    background-color: #2c6a9f;
+  }
+
+  .my_class {
+
+  background-color: #9f472c;
+
+}
+    </style>
   </head>
   <body>
-    <h1>Anime Search Results</h1>
+    <h1>{{ username1 }}'s Stats</h1>
 
     {% if stats %}
       <table>
         <thead>
           <tr>
-            <th> Add </th>
             <th>Name</th>
             <th>Completed</th>
             <th>Episodes Watched</th>
@@ -34,17 +135,14 @@
     {% else %}
       <p>No results found.</p>
     {% endif %}
-
-      <div>
-          <h1>UserAnimeSite</h1>
-          <p>Choose from the following options:</p>
-          <a href="{% url 'friendprofile_s' username username1%}?status=1"><button>Completed</button></a>
-          <a href="{% url 'friendprofile_s' username username1%}?status=2"><button>Planing</button></a>
-          <a href="{% url 'friendprofile_s' username username1%}?status=3"><button>Favourites</button></a>
-          <a href="{% url 'friendprofile_s' username username1%}?status=4"><button>Watching</button></a>
-      </div>
+    <div>
+      <h1>{{ username1 }}'s AnimeList</h1>
+      <a href="{% url 'friendprofile_s' username username1 %}?status=1"><button id="Completed-btn" (click)= " x= 'Completed'"  [ngClass]="{'my_class': x == 'Completed'}">Completed</button></a>
+      <a href="{% url 'friendprofile_s' username username1 %}?status=2"><button id="Planning-btn" (click)= "x='Planning'"  [ngClass]="{'my_class': x == 'Planning'}">Planning</button></a>
+      <a href="{% url 'friendprofile_s' username username1 %}?status=3"><button id="Favourites-btn" (click)= "x='Favorites'" [ngClass]="{'my_class': x == 'Favourites'}">Favourites</button></a>
+      <a href="{% url 'friendprofile_s' username username1 %}?status=4"><button id="Watching-btn" (click)= "x='Watching'" [ngClass]="{'my_class': x == 'Watching'}">Watching</button></a>
+    </div>
       {% if flag %}
-          <h1>Anime Search Results</h1>
           {% if anime_list %}
           <table>
               <thead>
@@ -63,8 +161,8 @@
               <tbody>
               {% for anime in anime_list %}
                   <tr>
-                  <td>{{ anime.0}}</td>
-                  <td>{{ anime.1}}</td>
+                    <td><a href="{% url 'animeprofile' username anime.0 %}"><button>View</button></a></td>
+                    <td>{{ anime.1}}</td>
                   <td>{{ anime.2}}</td>
                   <td>{{ anime.3}}</td>
                   <td>{{ anime.4}}</td>
@@ -80,5 +178,13 @@
           <p>No results found.</p>
           {% endif %}
       {% endif %}
+     <script>
+
+
+let x = ""
+
+
+
+</script>
     </body>
   </html>

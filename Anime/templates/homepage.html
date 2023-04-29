@@ -11,9 +11,9 @@
 			font-size: 16px;
 			line-height: 1.6;
 			color: #333333;
-			background-color: #F5F5F5;
+			background-color: #fafafa;
 			margin: 0;
-			padding: 0;
+			padding: 15px;
 		}
 		h1 {
 			font-size: 36px;
@@ -32,24 +32,18 @@
 			color: #ffffff;
 		}
 		button {
-			background-color: #e74c3c;
-			color: #ffffff;
-			border: none;
-			padding: 12px 20px;
-			font-size: 18px;
-			font-weight: 500;
-			border-radius: 5px;
-			cursor: pointer;
-			margin-top: 30px;
-			display: block;
-			margin-left: auto;
-			margin-right: auto;
-			transition: all 0.3s ease;
-		}
-		button:hover {
-			background-color: #c0392b;
-			transform: translateY(-5px);
-		}
+        background-color: #428bca;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #2c6a9f;
+        transform: translateY(-5px);
+      }
 		table {
 			border-collapse: collapse;
 			width: 100%;
@@ -166,13 +160,15 @@ form {
       background-color: #3e8e41;
     }
 
+    
+
 	</style>
 </head>
 <body>
 	<div>
 		<h1>Welcome to MyAnimeSite</h1>
     
-		<div class="button-container">
+		<div class="button-container" style="  align-items: center;">
 			<a href="{% url 'searchanime' username%}"><button>Anime</button></a>
 			<a href="{% url 'searchmanga' username%}"><button>Manga</button></a>
 			<a href="{% url 'searchnovel' username%}"><button>Novels</button></a>
@@ -193,7 +189,7 @@ form {
       </div>
       
       <div style="display: inline-block;">
-        <button type="submit" class="btn btn-primary">Submit</button>
+        <button style=" width: 100px ; background-color: #428bca; height: 40px ;" type="submit" class="btn btn-primary">Submit</button>
       </div>
       
     </div>
