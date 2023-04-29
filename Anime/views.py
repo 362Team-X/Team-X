@@ -378,9 +378,12 @@ def inbox(request,username):
 
 def recommend(request,username):
     with connection.cursor() as cursor:
-        cursor.execute("WITH temp AS(SELECT genre FROM Genre_count WHERE name = %s ORDER BY count DESC LIMIT 2), temp2 as (SELECT DISTINCT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,score,genres FROM temp,anime WHERE genre = ANY(genres) AND ID NOT IN (SELECT animeid FROM Completed WHERE name = %s)  ORDER BY score DESC LIMIT 50) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,genres FROM temp2;",[username,username])
+        cursor.execute("WITH temp AS(SELECT genre FROM Genre_count WHERE name = %s ORDER BY count DESC LIMIT 2), temp2 as (SELECT DISTINCT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,score,genres FROM temp,anime WHERE genre = ANY(genres) AND ID NOT IN (SELECT animeid FROM Completed WHERE name = %s)  ORDER BY score DESC LIMIT 20) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,genres FROM temp2;",[username,username])
         anime_list = cursor.fetchall()
-    return render(request,'recommended.html',{'username':username,'anime_list': anime_list})
+    with connection.cursor() as cursor:
+        cursor.execute("WITH friend_ratings AS (SELECT c.name, c.animeid, c.score FROM Friends AS f, Completed AS c WHERE (f.name1 = c.name AND f.name2=%s) OR (f.name1 = %s AND f.name2 = c.name)), recommended_animes AS (SELECT DISTINCT a.ID, a.eng_title, a.japanese_title, a.episodes, a.aired_from, a.aired_to,a.source, a.genres, c.score as userscore FROM friend_ratings AS c INNER JOIN Anime AS a ON c.animeid = a.ID WHERE a.ID NOT IN (SELECT animeid FROM Completed WHERE name = %s)ORDER BY c.score DESC LIMIT 20) SELECT ID, eng_title, japanese_title, episodes, aired_from, aired_to, source, genres FROM recommended_animes;",[username,username,username])
+        anime_list2 = cursor.fetchall()
+    return render(request,'recommended.html',{'username':username,'anime_list': anime_list, 'anime_list2': anime_list2})
 
 def friendprofile(request,username,username1):
     with connection.cursor() as cursor:
