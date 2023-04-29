@@ -65,7 +65,6 @@ def search_manga(request, username):
                 anime_title = form.cleaned_data['anime_title']
                 with connection.cursor() as cursor:
                     cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source = %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), 'Manga'])
-                    print("manga")
                     anime_list = cursor.fetchall()
                 return render(request, 'anime_results.html', {'anime_list': anime_list, 'username': username})
     else:
@@ -246,14 +245,14 @@ def mylist(request,username):
 def mylist_s(request, username):
     query = request.GET.get('status', '')
     flag = True
-    print(query)
-    print('ffffffff')
+
     if request.method == 'POST':
         id = int(request.POST.get('type'))
         score = int(request.POST['score'])
         with connection.cursor() as cursor:
             if(score == 0):
-                cursor.execute("DELETE FROM Completed WHERE name= %s AND animeid = %s;",[username, id])    
+                cursor.execute("DELETE FROM Completed WHERE name= %s AND animeid = %s;",[username, id])
+                cursor.execute("UPDATE Genre_count SET count = count - 1 WHERE genre = ANY(SELECT unnest(genres) FROM Anime WHERE ID = %s) AND name = %s;",[id,username]) 
             else:
                 cursor.execute("UPDATE Completed SET score = %s WHERE animeid = %s AND name = %s;", [score, id, username])
                 cursor.execute("UPDATE Anime SET num_scored_by =num_scored_by +1,score = ((SELECT score FROM Anime WHERE id = %s)*(num_scored_by-1)*(1.0) + %s *(1.0))/(num_scored_by) WHERE ID = %s;",[id,score,id])
@@ -299,6 +298,8 @@ def anime_profile(request,username,id):
                     cursor.execute("DELETE FROM watching WHERE name= %s AND animeid = %s;",(username,id))
                     cursor.execute("DELETE FROM completed WHERE name= %s AND animeid = %s;",(username,id))
                     cursor.execute("DELETE FROM planning WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("UPDATE Genre_count SET count = count - 1 WHERE genre = ANY(SELECT unnest(genres) FROM Anime WHERE ID = %s) AND name = %s;",[id,username]) 
+
                     cursor.execute("INSERT INTO watching(name, animeid) VALUES (%s, %s);",(username,id))
                 return redirect('/homepage/{}/'.format(username))
             elif status == 'completed':
@@ -306,13 +307,16 @@ def anime_profile(request,username,id):
                     cursor.execute("DELETE FROM watching WHERE name= %s AND animeid = %s;",(username,id))
                     cursor.execute("DELETE FROM completed WHERE name= %s AND animeid = %s;",(username,id))
                     cursor.execute("DELETE FROM planning WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("UPDATE Genre_count SET count = count - 1 WHERE genre = ANY(SELECT unnest(genres) FROM Anime WHERE ID = %s) AND name = %s;",[id,username]) 
                     cursor.execute("INSERT INTO completed(name, animeid) VALUES (%s, %s);",(username,id))
+                    cursor.execute("WITH genres AS (SELECT unnest(genres) as genre FROM Anime WHERE ID = %s), existing_genres AS (UPDATE Genre_count SET count = count + 1 WHERE genre IN (SELECT genre FROM genres) AND name = %s RETURNING genre) INSERT INTO Genre_count (name, genre, count) SELECT %s, genre, 1 FROM genres WHERE genre NOT IN (SELECT genre FROM existing_genres);",[id,username,username])
                 return redirect('/homepage/{}/'.format(username))
             elif status == 'planning':
                 with connection.cursor() as cursor:
                     cursor.execute("DELETE FROM watching WHERE name= %s AND animeid = %s;",(username,id))
                     cursor.execute("DELETE FROM completed WHERE name= %s AND animeid = %s;",(username,id))
                     cursor.execute("DELETE FROM planning WHERE name= %s AND animeid = %s;",(username,id))
+                    cursor.execute("UPDATE Genre_count SET count = count - 1 WHERE genre = ANY(SELECT unnest(genres) FROM Anime WHERE ID = %s) AND name = %s;",[id,username]) 
                     cursor.execute("INSERT INTO planning(name, animeid) VALUES (%s, %s);",(username,id))
                 return redirect('/homepage/{}/'.format(username))
             else:
@@ -320,11 +324,12 @@ def anime_profile(request,username,id):
                     cursor.execute("DELETE FROM watching WHERE name= %s AND animeid = %s;",(username,id))
                     cursor.execute("DELETE FROM completed WHERE name= %s AND animeid = %s;",(username,id))
                     cursor.execute("DELETE FROM planning WHERE name= %s AND animeid = %s;",(username,id)) 
+                    cursor.execute("UPDATE Genre_count SET count = count - 1 WHERE genre = ANY(SELECT unnest(genres) FROM Anime WHERE ID = %s) AND name = %s;",[id,username]) 
                 return redirect('/homepage/{}/'.format(username))
 
     else:
         with connection.cursor() as cursor:
-            cursor.execute("SELECT * FROM Anime WHERE id = %s;", [id])
+            cursor.execute("SELECT ID, aired_from, aired_to, duration, episodes, genres, premiered, certification, source, synopsis, eng_title, japanese_title, type, studio_id, ROUND(CAST(score AS NUMERIC), 2) AS score, num_scored_by FROM Anime WHERE ID = %s;",[id])
             anime = cursor.fetchall()[0]
         val = 0
         val_f = False
@@ -372,7 +377,6 @@ def inbox(request,username):
         with connection.cursor() as cursor:
             cursor.execute("SELECT inbox FROM users WHERE name = %s;", [username])
             users = cursor.fetchall()[0][0]
-            print(users)
 
     return render(request,'inbox.html',{'users':users})
 
@@ -423,10 +427,10 @@ def my_view(request):
 
 def removelist(request,username,id):
     query = request.GET.get('status', '')
-    print(query)
     with connection.cursor() as cursor:
         if(query == '1'):
             cursor.execute("DELETE FROM Completed WHERE name = %s AND animeid = %s ;", [username,id])
+            cursor.execute("UPDATE Genre_count SET count = count - 1 WHERE genre = ANY(SELECT unnest(genres) FROM Anime WHERE ID = %s) AND name = %s;",[id,username]) 
         elif(query == '2'):
             cursor.execute("DELETE FROM Planning WHERE name = %s AND animeid = %s ;", [username,id])
         elif(query == '4'):
