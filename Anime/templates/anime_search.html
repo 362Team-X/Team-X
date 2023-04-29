@@ -7,7 +7,7 @@ body {
   font-family: Arial, sans-serif;
   font-size: 16px;
   line-height: 1.5;
-  padding: 10px;
+  padding: 20px;
 }
 
 h2 {
@@ -53,7 +53,10 @@ button {
   cursor: pointer;
   border-radius: 4px;
 }
-
+button:hover {
+        background-color: #2c6a9f;
+        transform: translateY(-5px);
+      }
 /* Style the form inputs */
 form input[type="submit"] {
   background-color: #3498db;
@@ -82,12 +85,20 @@ form input[type="text"] {
   height: 20px;
     width: 250px;
 }
+input[type=submit]:hover {
+  background-color: #2c6a9f;
+        transform: translateY(-5px);
+	}
 </style>
 <head>
   <meta charset="utf-8">
   <title>Anime Search Results</title>
 </head>
 
+<div class="row">
+  <td><a href="{% url 'home' username %}"><button>Home</button></a></td>
+<h1 style="text-align: center;">{{source}} search</h1>
+<div>
 <body>
   <div style="display: flex;">
   <form action = "" method = "post">
@@ -115,7 +126,8 @@ form input[type="text"] {
         <th>English Title</th>
         <th>Japanese Title</th>
         <th>Episodes</th>
-        <th>Score</th>
+        <th>Aired From</th>
+        <th>Aired To</th>
       </tr>
     </thead>
     <tbody>
@@ -126,6 +138,9 @@ form input[type="text"] {
           <td>{{ anime.2}}</td>
           <td>{{ anime.3}}</td>
           <td>{{ anime.4}}</td>
+          <td>{{ anime.5}}</td>
+
+
         </tr>
       {% endfor %}
     </tbody>

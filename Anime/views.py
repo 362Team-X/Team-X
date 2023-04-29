@@ -9,7 +9,7 @@ from datetime import date
 
 def search_anime(request, username):   
     with connection.cursor() as cursor:
-        cursor.execute("WITH temp AS (SELECT id,eng_title,japanese_title,episodes,CAST(EXTRACT(YEAR FROM aired_from) AS INTEGER) As year_from,COUNT(*) AS num_watched FROM Completed,Anime WHERE Anime.id = Completed.animeid AND Anime.source = %s GROUP BY id,eng_title,japanese_title,episodes,year_from), temp2 AS(SELECT id,eng_title,japanese_title,episodes,year_from,num_watched,rank() over(partition by year_from ORDER BY num_watched DESC) AS row_num FROM temp ) SELECT id,eng_title,japanese_title,episodes,year_from FROM temp2 WHERE row_num = 1 ORDER BY year_from DESC;", ['Original'])
+        cursor.execute("WITH temp AS (SELECT id,eng_title,japanese_title,episodes,CAST(EXTRACT(YEAR FROM aired_from) AS INTEGER) As year_from,COUNT(*) AS num_watched FROM Completed,Anime WHERE Anime.id = Completed.animeid AND Anime.source = %s GROUP BY id,eng_title,japanese_title,episodes,year_from), temp2 AS(SELECT id,eng_title,japanese_title,episodes,year_from,num_watched,rank() over(partition by year_from ORDER BY num_watched DESC) AS row_num FROM temp ) SELECT id,eng_title,japanese_title,episodes,year_from FROM temp2 WHERE row_num = 1 AND year_from >= 2000 ORDER BY year_from DESC;", ['Original'])
         yearly_list = cursor.fetchall()
         cursor.execute("WITH temp AS(SELECT animeid,COUNT(*) as num_users FROM Favourites WHERE Source = %s GROUP BY animeid ORDER BY num_users DESC LIMIT 10) SELECT  ID,eng_title,japanese_title,episodes,anime.score FROM temp,anime WHERE animeid = id;", ['Original'])
         mostfav_list = cursor.fetchall()   
@@ -30,22 +30,22 @@ def search_anime(request, username):
                 with connection.cursor() as cursor:
                     cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source = %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), 'Original'])
                     anime_list = cursor.fetchall()
-            return render(request, 'anime_results.html', {'anime_list': anime_list, 'username': username})
+            return render(request, 'anime_results.html', {'anime_list': anime_list, 'username': username, 'source' : 'Anime'})
     else:
         form = SearchForm()
         genre_form = GenreForm()   
         with connection.cursor() as cursor:
-            cursor.execute("SELECT  Anime.ID,eng_title,japanese_title,episodes,score FROM Anime  WHERE source = %s ORDER BY score DESC LIMIT 10;",['Original'])
+            cursor.execute("SELECT  Anime.ID,eng_title,japanese_title,episodes,ROUND(CAST(score AS NUMERIC), 2) As score FROM Anime  WHERE source = %s ORDER BY score DESC LIMIT 10;",['Original'])
             top_list = cursor.fetchall()      
     # Render the search template with the search form
-    return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form, 'username': username })
+    return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form, 'username': username ,'source' : 'Anime'})
 
 
 def search_manga(request, username):       
     with connection.cursor() as cursor:
-        cursor.execute("WITH temp AS (SELECT id,eng_title,japanese_title,episodes,CAST(EXTRACT(YEAR FROM aired_from) AS INTEGER) As year_from,COUNT(*) AS num_watched FROM Completed,Anime WHERE Anime.id = Completed.animeid AND Anime.source = %s GROUP BY id,eng_title,japanese_title,episodes,year_from), temp2 AS(SELECT id,eng_title,japanese_title,episodes,year_from,num_watched,rank() over(partition by year_from ORDER BY num_watched DESC) AS row_num FROM temp ) SELECT id,eng_title,japanese_title,episodes,year_from FROM temp2 WHERE row_num = 1 ORDER BY year_from DESC;", ['Manga'])
+        cursor.execute("WITH temp AS (SELECT id,eng_title,japanese_title,episodes,CAST(EXTRACT(YEAR FROM aired_from) AS INTEGER) As year_from,COUNT(*) AS num_watched FROM Completed,Anime WHERE Anime.id = Completed.animeid AND Anime.source = %s GROUP BY id,eng_title,japanese_title,episodes,year_from), temp2 AS(SELECT id,eng_title,japanese_title,episodes,year_from,num_watched,rank() over(partition by year_from ORDER BY num_watched DESC) AS row_num FROM temp ) SELECT id,eng_title,japanese_title,episodes,year_from FROM temp2 WHERE row_num = 1 AND year_from >= 2000 ORDER BY year_from DESC;", ['Manga'])
         yearly_list = cursor.fetchall()
-        cursor.execute("WITH temp AS(SELECT animeid,COUNT(*) as num_users FROM Favourites WHERE Source = %s GROUP BY animeid ORDER BY num_users DESC LIMIT 10) SELECT  ID,eng_title,japanese_title,episodes,anime.score FROM temp,anime WHERE animeid = id;", ['Manga'])
+        cursor.execute("WITH temp AS(SELECT animeid,COUNT(*) as num_users FROM Favourites WHERE Source = %s GROUP BY animeid ORDER BY num_users DESC LIMIT 10) SELECT  ID,eng_title,japanese_title,episodes,ROUND(CAST(anime.score AS NUMERIC), 2) As score FROM temp,anime WHERE animeid = id;", ['Manga'])
         mostfav_list = cursor.fetchall()        
     if request.method == 'POST':   
         val = request.POST.get('type')   
@@ -66,20 +66,20 @@ def search_manga(request, username):
                 with connection.cursor() as cursor:
                     cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source = %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), 'Manga'])
                     anime_list = cursor.fetchall()
-                return render(request, 'anime_results.html', {'anime_list': anime_list, 'username': username})
+                return render(request, 'anime_results.html', {'anime_list': anime_list, 'username': username,  'source' : 'Manga'})
     else:
         form = SearchForm()
         genre_form = GenreForm()
         with connection.cursor() as cursor:
-            cursor.execute("SELECT Anime.ID,eng_title,japanese_title,episodes,score FROM Anime  WHERE source = %s ORDER BY score DESC LIMIT 10;",['Manga'])
+            cursor.execute("SELECT Anime.ID,eng_title,japanese_title,episodes,ROUND(CAST(score AS NUMERIC), 2) As score FROM Anime  WHERE source = %s ORDER BY score DESC LIMIT 10;",['Manga'])
             top_list = cursor.fetchall()
 
     # Render the search template with the search form
-    return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form, 'username': username })
+    return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form, 'username': username , 'source' : 'Manga'})
 
 def search_novel(request, username):   
     with connection.cursor() as cursor:
-        cursor.execute("WITH temp AS (SELECT id,eng_title,japanese_title,episodes,CAST(EXTRACT(YEAR FROM aired_from) AS INTEGER) As year_from,COUNT(*) AS num_watched FROM Completed,Anime WHERE Anime.id = Completed.animeid AND Anime.source ILIKE %s GROUP BY id,eng_title,japanese_title,episodes,year_from), temp2 AS(SELECT id,eng_title,japanese_title,episodes,year_from,num_watched,rank() over(partition by year_from ORDER BY num_watched DESC) AS row_num FROM temp ) SELECT id,eng_title,japanese_title,episodes,year_from FROM temp2 WHERE row_num = 1 ORDER BY year_from DESC;", ['%{}%'.format('novel')])
+        cursor.execute("WITH temp AS (SELECT id,eng_title,japanese_title,episodes,CAST(EXTRACT(YEAR FROM aired_from) AS INTEGER) As year_from,COUNT(*) AS num_watched FROM Completed,Anime WHERE Anime.id = Completed.animeid AND Anime.source ILIKE %s GROUP BY id,eng_title,japanese_title,episodes,year_from), temp2 AS(SELECT id,eng_title,japanese_title,episodes,year_from,num_watched,rank() over(partition by year_from ORDER BY num_watched DESC) AS row_num FROM temp ) SELECT id,eng_title,japanese_title,episodes,year_from FROM temp2 WHERE row_num = 1 AND year_from >= 2000 ORDER BY year_from DESC;", ['%{}%'.format('novel')])
         yearly_list = cursor.fetchall()
         cursor.execute("WITH temp AS(SELECT animeid,COUNT(*) as num_users FROM Favourites WHERE Source ILIKE %s GROUP BY animeid ORDER BY num_users DESC LIMIT 10) SELECT ID,eng_title,japanese_title,episodes,anime.score FROM temp,anime WHERE animeid = id;", ['%{}%'.format('novel')])
         mostfav_list = cursor.fetchall()        
@@ -100,7 +100,7 @@ def search_novel(request, username):
                 with connection.cursor() as cursor:
                     cursor.execute("SELECT id,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime WHERE (eng_title ILIKE %s OR japanese_title ILIKE %s) AND source ILIKE %s;", ['%{}%'.format(anime_title),'%{}%'.format(anime_title), '%{}%'.format('novel')])
                     anime_list = cursor.fetchall()
-                return render(request, 'anime_results.html', {'anime_list': anime_list, 'username': username})
+                return render(request, 'anime_results.html', {'anime_list': anime_list, 'username': username, 'source' : 'Novel'})
     else:
         form = SearchForm()
         genre_form = GenreForm()
@@ -108,7 +108,7 @@ def search_novel(request, username):
             cursor.execute("SELECT  Anime.ID,eng_title,japanese_title,episodes,score FROM Anime  WHERE source ILIKE %s ORDER BY score DESC LIMIT 10;",['%{}%'.format('novel')])
             top_list = cursor.fetchall()
     # Render the search template with the search form
-    return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form, 'username': username })
+    return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form, 'username': username , 'source' : 'Novel' })
 
 def sign_up(request):
     confirm_flag = False
@@ -190,7 +190,7 @@ def homepage(request, username):
                 user = cursor.fetchall()
             # Render the results template with the list of anime
                 if(len(user) == 0):
-                    return render(request,"second.html")
+                    return render(request,"second.html",{"username": username})
                 return redirect('/userpage/{}/{}/'.format(username, user[0][0]))
     else:
         form = user_searchForm()
@@ -209,7 +209,7 @@ def userpage(request, username, username2):
             if(len(l) != 0):
                 already_friend = True
         if(already_friend):
-            return render(request,'fourth.html')
+            return render(request,'fourth.html',{'username':username})
         else:
             
             with connection.cursor() as cursor:
@@ -219,7 +219,7 @@ def userpage(request, username, username2):
                     cursor.execute("UPDATE Users SET inbox = array_append(inbox,%s) WHERE name = %s;",[username,username2])
                     return redirect("/homepage/{}".format(username))
                 else:
-                    return render(request,'third.html')
+                    return render(request,'third.html',{'username':username})
     else:
         with connection.cursor() as cursor:
             cursor.execute("SELECT * FROM Stats WHERE name = %s;", [username2])
@@ -230,7 +230,7 @@ def profile(request,username):
     with connection.cursor() as cursor:
         cursor.execute("SELECT * FROM Stats WHERE name = %s;", [username])
         stats = cursor.fetchall()
-    return render(request,'myprofile.html',{'stats':stats})
+    return render(request,'myprofile.html',{'stats':stats, 'username':username})
 
 def friends(request,username):
     with connection.cursor() as cursor:
@@ -259,7 +259,7 @@ def mylist_s(request, username):
 
     with connection.cursor() as cursor:
         if(query == '1'):
-            cursor.execute("WITH temp AS (SELECT animeid,score FROM completed WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,temp.score FROM anime, temp WHERE animeid=ID;", [username])
+            cursor.execute("WITH temp AS (SELECT animeid,ROUND(CAST(score AS NUMERIC), 2) As score FROM completed WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,temp.score FROM anime, temp WHERE animeid=ID;", [username])
         elif(query == '2'):
             cursor.execute("WITH temp AS (SELECT animeid FROM planning WHERE name =%s ) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,score FROM anime, temp WHERE animeid=ID;", [username])
         elif(query == '4'):
@@ -358,14 +358,22 @@ def anime_profile(request,username,id):
 
 def inbox(request,username):
     if request.method == 'POST':
+        k = 0
         action = request.POST.get('action')
         name = request.POST.get('user_name')
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT * FROM friends WHERE (name1 = %s AND name2 = %s )OR (name1 = %s AND name2 = %s);",[username,name,name,username])
+            l = cursor.fetchall()
+            k = len(l)
         if action == 'accept':
             with connection.cursor() as cursor:
-                if(username < name):
-                    cursor.execute("BEGIN TRANSACTION;INSERT INTO Friends(name1,name2)VALUES(%s,%s) ;UPDATE Users SET inbox = array_remove(inbox,%s) WHERE name = %s;END TRANSACTION;",[username,name,name,username])
+                if k == 0:
+                    if(username < name):
+                        cursor.execute("BEGIN TRANSACTION;INSERT INTO Friends(name1,name2)VALUES(%s,%s) ;UPDATE Users SET inbox = array_remove(inbox,%s) WHERE name = %s;END TRANSACTION;",[username,name,name,username])
+                    else:
+                        cursor.execute("BEGIN TRANSACTION;INSERT INTO Friends(name1,name2)VALUES(%s,%s) ;UPDATE Users SET inbox = array_remove(inbox,%s) WHERE name = %s;END TRANSACTION;",[name,username,name,username])
                 else:
-                    cursor.execute("BEGIN TRANSACTION;INSERT INTO Friends(name1,name2)VALUES(%s,%s) ;UPDATE Users SET inbox = array_remove(inbox,%s) WHERE name = %s;END TRANSACTION;",[name,username,name,username])
+                    cursor.execute("UPDATE Users SET inbox = array_remove(inbox,%s) WHERE name = %s;",[name,username])
         elif action == 'reject':
             with connection.cursor() as cursor:
                 cursor.execute("UPDATE Users SET inbox = array_remove(inbox,%s) WHERE name = %s;",[name,username])
@@ -378,11 +386,11 @@ def inbox(request,username):
             cursor.execute("SELECT inbox FROM users WHERE name = %s;", [username])
             users = cursor.fetchall()[0][0]
 
-    return render(request,'inbox.html',{'users':users})
+    return render(request,'inbox.html',{'users':users,'username':username})
 
 def recommend(request,username):
     with connection.cursor() as cursor:
-        cursor.execute("WITH temp AS(SELECT genre FROM Genre_count WHERE name = %s ORDER BY count DESC LIMIT 2), temp2 as (SELECT DISTINCT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,score,genres FROM temp,anime WHERE genre = ANY(genres) AND ID NOT IN (SELECT animeid FROM Completed WHERE name = %s)  ORDER BY score DESC LIMIT 20) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,genres FROM temp2;",[username,username])
+        cursor.execute("WITH temp AS(SELECT genre FROM Genre_count WHERE name = %s ORDER BY count DESC LIMIT 2), temp2 as (SELECT DISTINCT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,ROUND(CAST(score AS NUMERIC), 2) As score,genres FROM temp,anime WHERE genre = ANY(genres) AND ID NOT IN (SELECT animeid FROM Completed WHERE name = %s)  ORDER BY score DESC LIMIT 20) SELECT ID,eng_title,japanese_title,episodes,aired_from,aired_to,source,genres FROM temp2;",[username,username])
         anime_list = cursor.fetchall()
     with connection.cursor() as cursor:
         cursor.execute("WITH friend_ratings AS (SELECT c.name, c.animeid, c.score FROM Friends AS f, Completed AS c WHERE (f.name1 = c.name AND f.name2=%s) OR (f.name1 = %s AND f.name2 = c.name)), recommended_animes AS (SELECT DISTINCT a.ID, a.eng_title, a.japanese_title, a.episodes, a.aired_from, a.aired_to,a.source, a.genres, c.score as userscore FROM friend_ratings AS c INNER JOIN Anime AS a ON c.animeid = a.ID WHERE a.ID NOT IN (SELECT animeid FROM Completed WHERE name = %s)ORDER BY c.score DESC LIMIT 20) SELECT ID, eng_title, japanese_title, episodes, aired_from, aired_to, source, genres FROM recommended_animes;",[username,username,username])

@@ -6,7 +6,7 @@
 		body {
 			font-family: Arial, sans-serif;
 			margin: 0;
-			padding: 0;
+			padding: 20px;
 		}
 
 		h1 {
@@ -27,6 +27,8 @@
 			background-color: #428bca;
 			color: white;
 			border: none;
+			font-size: 1rem;
+            font-weight: 400;
 			padding: 10px 20px;
 			margin: 10px;
 			cursor: pointer;
@@ -62,11 +64,11 @@
 
 		label {
 			margin-right: 10px;
-			font-size: 16px;
+			font-size: 20px;
 		}
 
 		select {
-			font-size: 16px;
+			font-size: 20px;
 			padding: 5px;
 			margin-right: 10px;
 		}
@@ -97,9 +99,12 @@
 </head>
 <body>
 	<div>
-		<h1>Welcome to MyAnimeSite</h1>
+		<div class="row">
+			<td><a href="{% url 'home' username %}"><button>Home</button></a></td>
+		  <h1 style="text-align: center;">My Anime List</h1>
+		  <div>
 		<a href="{% url 'mylist_s' username%}?status=1"><button>Completed</button></a>
-		<a href="{% url 'mylist_s' username%}?status=2"><button>Planing</button></a>
+		<a href="{% url 'mylist_s' username%}?status=2"><button>Planning</button></a>
         <a href="{% url 'mylist_s' username%}?status=3"><button>Favourites</button></a>
         <a href="{% url 'mylist_s' username%}?status=4"><button>Watching</button></a>
 	</div>

@@ -7,7 +7,7 @@
       body {
         font-family: Arial, sans-serif;
         margin: 0;
-        padding: 0;
+        padding: 20px;
         background-color: #F0F2F5;
       }
       h1 {
@@ -54,11 +54,27 @@
         margin: 40px 0;
         color: #666666;
       }
+      button {
+        background-color: #428bca;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 20px;
+      }
+      button:hover {
+        background-color: #2c6a9f;
+        transform: translateY(-5px);
+      }
     </style>
   </head>
   <body>
-    <h1>My Profile</h1>
-    {% if stats %}
+    <div class="row">
+			<td><a href="{% url 'home' username %}"><button>Home</button></a></td>
+		  <h1 style="text-align: center;">My Profile</h1>
+		  <div>
+      {% if stats %}
       <table>
         <thead>
           <tr>

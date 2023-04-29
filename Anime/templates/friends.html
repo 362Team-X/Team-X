@@ -7,7 +7,7 @@
       body {
         font-family: Arial, sans-serif;
         margin: 0;
-        padding: 0;
+        padding: 20px;
         background-color: #F0F2F5;
       }
 
@@ -68,24 +68,25 @@
       }
 
       button {
-        font-size: 18px;
-        color: #fff;
         background-color: #428bca;
+        color: #fff;
         border: none;
-        border-radius: 4px;
-        padding: 10px 20px;
+        padding: 5px 10px;
+        border-radius: 5px;
         cursor: pointer;
-        margin: 10px;
-        float: center;
+        font-size: 16px;
       }
       button:hover {
         background-color: #2c6a9f;
+        transform: translateY(-5px);
       }
     </style>
   </head>
   <body>
-    <h1>Friend List</h1>
-    {% if friends %}
+    <div class="row">
+			<td><a href="{% url 'home' username %}"><button>Home</button></a></td>
+		  <h1 style="text-align: center;">Friend List</h1>
+		  <div>    {% if friends %}
       <table>
         <thead>
           <tr>

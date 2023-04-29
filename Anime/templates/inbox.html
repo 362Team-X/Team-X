@@ -2,30 +2,53 @@
 <html>
   <head>
     <meta charset="utf-8">
-    <title>Stats</title>
+    <title>Friend requests</title>
     <style>
-      table {
-        border-collapse: collapse;
-        width: 80%;
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f2f2f2;
+        padding: 20px;
       }
-    
-      th, td {
+      h1 {
         text-align: center;
-        padding: 8px;
+        margin-top: 50px;
       }
-    
-      th {
-        background-color: #2c3e50;
-        color: #ffffff;
-        font-weight: 500;
+      table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-top: 40px;
+  margin-bottom: 80px;
+}
+
+thead {
+  background-color: #2c3e50;
+  color: #ffffff;
+  font-weight: 500;
+}
+
+th {
+  background-color: #2c3e50;
+			color: #ffffff;
+			font-weight: 500;
 			padding: 12px;
 			text-align: center;
-			border: 1px solid #dddddd;
-      }
-    
-      tr:nth-child(even) {
-        background-color: #f2f2f2;
-      }
+			border: 1px solid #dddddd; 
+}
+
+td {
+  padding: 12px;
+  text-align: center;
+  border: 1px solid #dddddd;
+}
+
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+tr:hover {
+  background-color: #ddd;
+}
+
     
     
       input[type="submit"] {
@@ -41,13 +64,30 @@
       input[type="submit"]:hover {
         background-color: #2c6a9f;
         transform: translateY(-5px);
-                  }
+       }
+
+       button {
+        background-color: #428bca;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      button:hover {
+        background-color: #2c6a9f;
+        transform: translateY(-5px);
+      }
     </style>
     
   </head>
   <body>
-    <h1>Inbox</h1>
-    {% if users %}
+    <div class="row">
+			<td><a href="{% url 'home' username %}"><button>Home</button></a></td>
+		  <h1 style="text-align: center;">Friend requests</h1>
+		  <div>    
+        {% if users %}
       <table>
         <thead>
           <tr>
