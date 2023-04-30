@@ -60,6 +60,18 @@
         cursor: pointer;
         border-radius: 10px;
       }
+      .signin {
+        text-align: center;
+        margin-top: 20px;
+        font-size: 14px;
+        color: #130a0a;
+      }
+
+      .signin a {
+        color: #428bca;
+        text-decoration: none;
+      }
+
     </style>
   </head>
   <body>
@@ -69,7 +81,11 @@
         {{ form.as_p }}
         <div style = "text-align: center;"> 
         <button class="btn btn-outline-info"> Sign Up </button>
+        <div class="signin">
+          <p>Already an existing user? <a href="{% url 'login' %}">Sign in</a></p>
+        </div>
       </form>
+      
     {% endif %}  
 
     {% if name_flag %}
@@ -79,6 +95,9 @@
         {{ form.as_p }}
         <div style = "text-align: center;"> 
           <button class="btn btn-outline-info"> Sign Up </button>
+        </div>
+        <div class="signin">
+          <p>Already an existing user? <a href="{% url 'login' %}">Sign in</a></p>
         </div>
       </form>
     {% endif %}
@@ -90,6 +109,9 @@
         {{ form.as_p }}
         <div style = "text-align: center;"> 
           <button class="btn btn-outline-info"> Sign Up </button>
+        </div>
+        <div class="signin">
+          <p>Already an existing user? <a href="{% url 'login' %}">Sign in</a></p>
         </div>
       </form>
     {% endif %}

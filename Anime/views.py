@@ -4,6 +4,7 @@ from django.db import connection
 from .forms import *
 from datetime import date
 
+
 # Create your views here.
 
 
@@ -170,7 +171,6 @@ def login(request):
                         passcode_flag = True
                         flag = False
                         return render(request, 'login.html', {'form': form, 'flag': flag, 'user_flag': user_flag, 'passcode_flag': passcode_flag})
-                
             return redirect('/homepage/{}/'.format(I1))
     else:
         form = log_inForm()    
@@ -179,6 +179,7 @@ def login(request):
 
 
 def homepage(request, username):
+    
     if request.method == 'POST':
         form = user_searchForm(request.POST)
         if form.is_valid():
