@@ -41,7 +41,7 @@ CREATE TABLE Users(
     location varchar(50),
     joindate Date,
     inbox name[],
-    password varchar(50) DEFAULT '1234',
+	password varchar(50) DEFAULT '1234',
     PRIMARY KEY(name)
 );
 
@@ -154,5 +154,7 @@ ON Planning (animeid);
 
 CREATE INDEX idx_watching_animeid
 ON Watching (animeid);
+
+
 
 END TRANSACTION;
