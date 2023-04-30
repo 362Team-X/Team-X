@@ -177,27 +177,31 @@ form {
 			<a href="{% url 'mylist' username %}"><button>mylist</button></a>
 			<a href="{% url 'inbox' username %}"><button>inbox</button></a>
 			<a href="{% url 'recommended' username %}"><button>Recommended for you</button></a>
-		
 	
   
-	<form action="" method="post">
-    {% csrf_token %}
-    
-    <div class="form-group">
-      <div style="display: inline-block; margin-right: 10px;">
-        {{ form}}
+      <div class="form-container" style="display: flex; justify-content: space-between;">
+        <form action="" method="post">
+          {% csrf_token %}
+  
+          <div class="form-group">
+            <div style="display: inline-block; margin-right: 10px;">
+              {{ form }}
+            </div>
+            <div style="display: inline-block;">
+              <button style="width: 100px; background-color: #428bca; height: 40px;" type="submit" class="btn btn-primary">Submit</button>
+            </div>
+  
+          </div>
+        </form>
+  
+        <a href="{% url 'login' %}" style="margin-left: 550px;"><button>Logout</button></a>
       </div>
-      
-      <div style="display: inline-block;">
-        <button style=" width: 100px ; background-color: #428bca; height: 40px ;" type="submit" class="btn btn-primary">Submit</button>
-      </div>
-      
-    </div>
+
   </div>
 </div>
   
     
-  </form>
+ 
 	
 	{% if anime_list %}
     <table>

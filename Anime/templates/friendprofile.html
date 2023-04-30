@@ -107,7 +107,11 @@
     </style>
   </head>
   <body>
-    <h1>{{ username1 }}'s Stats</h1>
+    <div class="row">
+			<td><a href="{% url 'home' username %}"><button>Home</button></a></td>
+		  <h1 style="text-align: center;">   {{ username1 }}'s Stats
+    </h1>
+		  <div>
 
     {% if stats %}
       <table>
@@ -136,7 +140,7 @@
       <p>No results found.</p>
     {% endif %}
     <div>
-      <h1>{{ username1 }}'s AnimeList</h1>
+      <h1 style="text-align: center;">{{ username1 }}'s AnimeList</h1>
       <a href="{% url 'friendprofile_s' username username1 %}?status=1"><button id="Completed-btn" (click)= " x= 'Completed'"  [ngClass]="{'my_class': x == 'Completed'}">Completed</button></a>
       <a href="{% url 'friendprofile_s' username username1 %}?status=2"><button id="Planning-btn" (click)= "x='Planning'"  [ngClass]="{'my_class': x == 'Planning'}">Planning</button></a>
       <a href="{% url 'friendprofile_s' username username1 %}?status=3"><button id="Favourites-btn" (click)= "x='Favorites'" [ngClass]="{'my_class': x == 'Favourites'}">Favourites</button></a>
