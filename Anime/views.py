@@ -36,7 +36,7 @@ def search_anime(request, username):
         form = SearchForm()
         genre_form = GenreForm()   
         with connection.cursor() as cursor:
-            cursor.execute("SELECT  Anime.ID,eng_title,japanese_title,episodes,ROUND(CAST(score AS NUMERIC), 2) As score FROM Anime  WHERE source = %s ORDER BY score DESC LIMIT 10;",['Original'])
+            cursor.execute("SELECT  Anime.ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime  WHERE source = %s ORDER BY score DESC LIMIT 10;",['Original'])
             top_list = cursor.fetchall()      
     # Render the search template with the search form
     return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form, 'username': username ,'source' : 'Anime'})
@@ -72,7 +72,7 @@ def search_manga(request, username):
         form = SearchForm()
         genre_form = GenreForm()
         with connection.cursor() as cursor:
-            cursor.execute("SELECT Anime.ID,eng_title,japanese_title,episodes,ROUND(CAST(score AS NUMERIC), 2) As score FROM Anime  WHERE source = %s ORDER BY score DESC LIMIT 10;",['Manga'])
+            cursor.execute("SELECT Anime.ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime  WHERE source = %s ORDER BY score DESC LIMIT 10;",['Manga'])
             top_list = cursor.fetchall()
 
     # Render the search template with the search form
@@ -106,7 +106,7 @@ def search_novel(request, username):
         form = SearchForm()
         genre_form = GenreForm()
         with connection.cursor() as cursor:
-            cursor.execute("SELECT  Anime.ID,eng_title,japanese_title,episodes,score FROM Anime  WHERE source ILIKE %s ORDER BY score DESC LIMIT 10;",['%{}%'.format('novel')])
+            cursor.execute("SELECT  Anime.ID,eng_title,japanese_title,episodes,aired_from,aired_to FROM Anime  WHERE source ILIKE %s ORDER BY score DESC LIMIT 10;",['%{}%'.format('novel')])
             top_list = cursor.fetchall()
     # Render the search template with the search form
     return render(request, 'anime_search.html', {'form': form, 'yearly_list': yearly_list, 'mostfav_list': mostfav_list, 'top_list' : top_list, 'genre_form': genre_form, 'username': username , 'source' : 'Novel' })
@@ -252,8 +252,8 @@ def mylist_s(request, username):
         score = int(request.POST['score'])
         with connection.cursor() as cursor:
             if(score == 0):
-                cursor.execute("DELETE FROM Completed WHERE name= %s AND animeid = %s;",[username, id])
-                cursor.execute("UPDATE Genre_count SET count = count - 1 WHERE genre = ANY(SELECT unnest(genres) FROM Anime WHERE ID = %s) AND name = %s;",[id,username]) 
+                cursor.execute("UPDATE Completed SET score = NULL WHERE animeid = %s AND name = %s;", [id, username])
+
             else:
                 cursor.execute("UPDATE Completed SET score = %s WHERE animeid = %s AND name = %s;", [score, id, username])
                 cursor.execute("UPDATE Anime SET num_scored_by =num_scored_by +1,score = ((SELECT score FROM Anime WHERE id = %s)*(num_scored_by-1)*(1.0) + %s *(1.0))/(num_scored_by) WHERE ID = %s;",[id,score,id])
